@@ -97,6 +97,18 @@ footer{margin:54px 0 26px; color:var(–ink-dim); font-size:.78rem; line-height:
 .tuner-row button.oct:disabled{opacity:.32; cursor:default}
 #oct-read{margin-left:auto; text-transform:none; letter-spacing:.02em; font-weight:600; font-size:.72rem; color:var(–accent)}
 @media (max-width:560px){.tuner-row{grid-template-columns:repeat(6,1fr) 30px 30px}}
+
+/* ── strummable chords (additive) ── */
+.strum{display:flex; align-items:center; gap:12px; margin-top:10px}
+.strum-lab{font-size:.7rem; letter-spacing:.18em; text-transform:uppercase; color:var(–ink-dim); font-weight:600}
+.sseg{display:flex; border:1px solid var(–line); border-radius:8px; overflow:hidden; background:var(–panel)}
+.sseg button{appearance:none; border:0; background:transparent; color:var(–ink-dim); font:600 .78rem ‘Inter’,system-ui,sans-serif; padding:7px 14px; cursor:pointer; transition:background .2s,color .2s}
+.sseg button.on{background:var(–accent); color:var(–accent-ink)}
+.sseg button:focus-visible{outline:2px solid var(–accent); outline-offset:2px}
+.strum small{font-size:.72rem; color:var(–ink-dim); opacity:.75}
+.card{cursor:pointer; -webkit-tap-highlight-color:transparent; transition:box-shadow .15s,border-color .15s}
+.card.strumming{border-color:var(–accent); box-shadow:0 0 0 2px var(–accent)}
+@media (max-width:560px){.strum small{display:none}}
 </style>
 
 </head>
@@ -113,6 +125,14 @@ footer{margin:54px 0 26px; color:var(–ink-dim); font-size:.78rem; line-height:
     <div class="tuner">
       <div class="tuner-label"><span>Tuner</span><small>tap a string — ring switch on to hear</small><span id="oct-read"></span></div>
       <div class="tuner-row" id="tuner-row"></div>
+      <div class="strum"><span class="strum-lab">Strum</span>
+        <div class="sseg" id="strum-seg">
+          <button type="button" data-g="190">Slow</button>
+          <button type="button" data-g="105" class="on">Medium</button>
+          <button type="button" data-g="45">Fast</button>
+        </div>
+        <small>tap any chord to hear it</small>
+      </div>
     </div>
     <div class="controls-inner">
       <div class="field field-tuning">
@@ -378,6 +398,67 @@ document.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',(
   renderTuner();
 }));
 renderTuner();
+
+/* ── strummable chords (additive) ── */
+let strumGap=105, strumComp=null;
+const strumActive=new Map();
+document.querySelectorAll('#strum-seg button').forEach(b=>b.addEventListener('click',()=>{
+  strumGap=+b.dataset.g;
+  document.querySelectorAll('#strum-seg button').forEach(x=>x.classList.toggle('on',x===b));
+}));
+function strumChord(card,frets){
+  if(!actx) actx=new (window.AudioContext||window.webkitAudioContext)();
+  if(actx.state==='suspended') actx.resume();
+  if(!strumComp){ strumComp=actx.createDynamicsCompressor(); strumComp.threshold.value=-14; strumComp.ratio.value=8; strumComp.connect(actx.destination); }
+  const prev=strumActive.get(card);
+  if(prev){
+    try{
+      const t=actx.currentTime;
+      prev.gains.forEach(g=>{g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(Math.max(g.gain.value,1e-4),t); g.gain.exponentialRampToValueAtTime(1e-4,t+0.05);});
+      prev.oscs.forEach(o=>o.stop(t+0.07));
+    }catch(e){}
+    clearTimeout(prev.tm); card.classList.remove('strumming'); strumActive.delete(card);
+  }
+  const base=TUNER[state.t].f, notes=[];
+  frets.forEach((f,i)=>{ if(f>=0) notes.push(base[i]*Math.pow(2,f/12)); });
+  if(!notes.length) return;
+  const t0=actx.currentTime+0.03, gap=strumGap/1000, oscs=[], gains=[];
+  notes.forEach((fr,k)=>{
+    const ts=t0+k*gap;
+    const g=actx.createGain();
+    g.gain.setValueAtTime(1e-4,ts);
+    g.gain.exponentialRampToValueAtTime(0.26,ts+0.02);
+    g.gain.setValueAtTime(0.26,ts+1.2);
+    g.gain.exponentialRampToValueAtTime(1e-4,ts+2.8);
+    g.connect(strumComp);
+    const o1=actx.createOscillator(); o1.type='sine'; o1.frequency.value=fr;
+    const g1=actx.createGain(); g1.gain.value=0.66; o1.connect(g1); g1.connect(g);
+    const o2=actx.createOscillator(); o2.type='sine'; o2.frequency.value=fr*2;
+    const g2=actx.createGain(); g2.gain.value=0.22; o2.connect(g2); g2.connect(g);
+    o1.start(ts); o2.start(ts); o1.stop(ts+2.9); o2.stop(ts+2.9);
+    oscs.push(o1,o2); gains.push(g);
+  });
+  card.classList.add('strumming');
+  const tm=setTimeout(()=>{card.classList.remove('strumming'); strumActive.delete(card);}, (notes.length-1)*strumGap+2900);
+  strumActive.set(card,{oscs,gains,tm});
+}
+(function(){
+  const optEl=document.getElementById('options');
+  if(!optEl) return;
+  optEl.addEventListener('click',e=>{
+    const card=(e.target&&e.target.closest)?e.target.closest('.card'):null;
+    if(!card) return;
+    const cards=Array.prototype.slice.call(optEl.querySelectorAll('.card'));
+    const idx=cards.indexOf(card);
+    if(idx<0) return;
+    const oi=Math.floor(idx/4), ci=idx%4;
+    const T=TUNINGS[state.t];
+    const shift=(PC[state.key]-PC[T.nativeKey]+12)%12;
+    const ch=DATA[state.t][state.prog].o[oi][ci];
+    const frets=ch[1].map(f=>f<0?-1:f+shift);
+    strumChord(card,frets);
+  });
+})();
 </script>
 
 </body>
