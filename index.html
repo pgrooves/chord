@@ -4,20 +4,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Progressions — Alternate Tunings · Practice Companion</title>
+<meta name="color-scheme" content="light">
+<title>Transposer — Open Chords</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0b0b0b; --panel:#161616; --line:#2a2a2a;
-  --ink:#f5f2ea; --ink-dim:#9a968c;
-  --accent:#5fc0b0; --accent-ink:#0b0b0b;
-  --card:#fdfcf8; --grid-string:#1a1a1a; --grid-fret:#b9b6ae; --inlay:#c9c6be;
+  color-scheme: only light;
+  --bg:#faf8f2; --panel:#ffffff; --line:#e3ddd0;
+  --ink:#17150e; --ink-dim:#6e6a5e;
+  --accent:#1f8f7e; --accent-ink:#ffffff;
+  --card:#ffffff; --grid-string:#1a1a1a; --grid-fret:#b9b6ae; --inlay:#c9c6be;
 }
 *{box-sizing:border-box; margin:0; padding:0}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth; background:#faf8f2}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *{transition:none!important; animation:none!important}}
-body{background:var(--bg); color:var(--ink); font-family:'Inter',system-ui,-apple-system,sans-serif; min-height:100vh}
+body{background:#faf8f2; background:var(--bg); color:var(--ink); font-family:'Inter',system-ui,-apple-system,sans-serif; min-height:100vh}
 .wrap{max-width:1100px; margin:0 auto; padding:0 20px}
 
 /* ── mosaic signature band ── */
@@ -31,7 +33,7 @@ h1{font-family:‘Poppins’,sans-serif; font-weight:800; font-size:clamp(1.9rem
 .byline{color:var(–ink-dim); font-size:.86rem; margin-top:8px}
 
 /* ── controls ── */
-.controls{position:sticky; top:0; z-index:20; background:linear-gradient(var(–bg) 86%,transparent); padding:18px 0 14px; border-bottom:1px solid var(–line)}
+.controls{position:sticky; top:0; z-index:20; background:var(–bg); padding:18px 0 14px; border-bottom:1px solid var(–line)}
 .controls-inner{display:grid; grid-template-columns:auto 1fr 1fr; gap:12px; align-items:end}
 .field label{display:block; font-size:.7rem; letter-spacing:.18em; text-transform:uppercase; color:var(–ink-dim); margin-bottom:7px; font-weight:600}
 .seg{display:flex; border:1px solid var(–line); border-radius:10px; overflow:hidden; background:var(–panel)}
@@ -57,7 +59,7 @@ select{width:100%; appearance:none; background:var(–panel) url(“data:image/s
 .option h2 .alt-tag{font-size:.62rem; letter-spacing:.18em; background:var(–accent); color:var(–accent-ink); border-radius:4px; padding:3px 8px}
 .option h2::after{content:””; flex:1; height:1px; background:var(–line)}
 .cards{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:14px}
-.card{background:var(–card); border-radius:12px; padding:12px 8px 8px; display:flex; flex-direction:column; align-items:center; box-shadow:0 1px 0 rgba(0,0,0,.5)}
+.card{background:var(–card); border:1px solid var(–line); border-radius:12px; padding:12px 8px 8px; display:flex; flex-direction:column; align-items:center; box-shadow:0 1px 3px rgba(40,35,20,.07)}
 .card .cname{font-family:‘Poppins’,sans-serif; font-weight:600; color:#111; font-size:.95rem; margin-bottom:2px; text-align:center; min-height:1.3em}
 .card svg{width:100%; height:auto; display:block}
 
@@ -74,6 +76,7 @@ footer{margin:54px 0 26px; color:var(–ink-dim); font-size:.78rem; line-height:
 #mosaic{height:46px}
 .prog-banner .keyname{font-size:1.25rem}
 }
+@media (prefers-color-scheme: dark){html,body{background:#faf8f2!important; color:#17150e!important}}
 </style>
 
 </head>
@@ -81,9 +84,9 @@ footer{margin:54px 0 26px; color:var(–ink-dim); font-size:.78rem; line-height:
 <div id="mosaic" aria-hidden="true"></div>
 <div class="wrap">
   <header class="mast">
-    <div class="kicker">Alternate Tunings · Practice Companion</div>
-    <h1>Progressions</h1>
-    <div class="byline">Every voicing from the Open D, DADGAD &amp; Open G books — in any key, instantly. Based on the books by Jeffrey Kunde · The Guitar Institute.</div>
+    <div class="kicker">Open Chords</div>
+    <h1>Transposer</h1>
+    <div class="byline">Every voicing in Open D, DADGAD &amp; Open G — in any key, instantly.</div>
   </header>
 
   <div class="controls">
@@ -111,11 +114,6 @@ footer{margin:54px 0 26px; color:var(–ink-dim); font-size:.78rem; line-height:
   <div class="prog-banner" id="banner"></div>
   <div id="capo"></div>
   <main id="options"></main>
-
-  <footer>
-    Chord shapes and progressions from <i>Progressions — Alternate Tunings: Open D, DADGAD &amp; Open G</i> by Jeffrey Kunde (©The Guitar Institute 2025), for personal practice use.
-    Shapes shown in keys other than the book's native key are shifted up the neck; notes marked with a ring were open strings in the original — barre them at the shift fret, or place a capo there to play the book shapes exactly as written.
-  </footer>
 </div>
 
 <script>
@@ -123,13 +121,13 @@ const DATA = {"od":[{"n":"I IV V vi","o":[[["",[0,0,0,0,0,0]],["",[0,2,0,1,2,0]]
 
 const TUNINGS = {
   od:{label:'Open D', notes:['D','A','D','F#','A','D'], pcs:[2,9,2,6,9,2], nativeKey:'D',
-      accent:'#5fc0b0', accentInk:'#0b0b0b',
+      accent:'#1f8f7e', accentInk:'#ffffff',
       palette:['#5fc0b0','#c06030','#c03220','#3f7f80','#f0e0b0','#f0c010','#e04040','#6f8040','#6a4a7a','#8fc0d0']},
   dd:{label:'DADGAD', notes:['D','A','D','G','A','D'], pcs:[2,9,2,7,9,2], nativeKey:'D',
-      accent:'#f0e0b8', accentInk:'#1a1408',
+      accent:'#b8923a', accentInk:'#ffffff',
       palette:['#f0e0b0','#e04040','#5fc0b0','#6f8040','#b0b040','#8fc0d0','#c06030','#c03220','#6a4a7a','#f0c010']},
   og:{label:'Open G', notes:['D','G','D','G','B','D'], pcs:[2,7,2,7,11,2], nativeKey:'G',
-      accent:'#c8763d', accentInk:'#0b0b0b',
+      accent:'#b05f24', accentInk:'#ffffff',
       palette:['#c06030','#e04040','#f0c010','#f0e0b0','#e06020','#5fc0b0','#3f7f80','#6f8040','#6a4a7a','#b0b040']}
 };
 const DEG = {'I':[0,''],'ii':[2,'m'],'iii':[4,'m'],'IV':[5,''],'V':[7,''],'vi':[9,'m']};
@@ -211,7 +209,7 @@ function renderMosaic(){
   let html='';
   for(let i=0;i<n;i++){
     const on=Math.random()>0.32;
-    html+=`<span style="background:${on?p[Math.floor(Math.random()*p.length)]:'#0b0b0b'}"></span>`;
+    html+=`<span style="background:${on?p[Math.floor(Math.random()*p.length)]:'#efe9dc'}"></span>`;
   }
   el.innerHTML=html;
 }
@@ -222,7 +220,7 @@ function render(){
   document.documentElement.style.setProperty('--accent-ink',T.accentInk);
   document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.t===state.t)));
   document.getElementById('tuneline').innerHTML=
-    `${T.label} tuning — <b>${T.notes.join(' ')}</b> · book written in ${T.nativeKey} major`;
+    `${T.label} tuning — <b>${T.notes.join(' ')}</b> · written in ${T.nativeKey} major`;
 
   const prog=DATA[state.t][state.prog];
   const numerals=prog.n.split(' ');
@@ -232,7 +230,7 @@ function render(){
     `<span class="keyname">${state.key} Major</span><span class="numerals">${prog.n}</span><span class="chordseq">${names.join(' — ')}</span>`;
 
   document.getElementById('capo').innerHTML = shift===0 ? '' :
-    `<div class="capo-note">Shapes shifted <b>+${shift} frets</b> from the book. Ring-marked notes <span class="ring-demo"></span> were open strings — barre them at fret ${shift}, or put a <b>capo at fret ${shift}</b> to play the book shapes exactly as printed.</div>`;
+    `<div class="capo-note">Shapes shifted <b>+${shift} frets</b>. Ring-marked notes <span class="ring-demo"></span> were open strings — barre them at fret ${shift}, or put a <b>capo at fret ${shift}</b> to play the original open shapes.</div>`;
 
   let html='';
   prog.o.forEach((row,oi)=>{
