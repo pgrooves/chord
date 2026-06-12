@@ -34,7 +34,7 @@ h1{font-family:‘Poppins’,sans-serif; font-weight:800; font-size:clamp(1.9rem
 
 /* ── controls ── */
 .controls{position:sticky; top:0; z-index:20; background:var(–bg); padding:18px 0 14px; border-bottom:1px solid var(–line)}
-.controls-inner{display:grid; grid-template-columns:auto 1fr 1fr; gap:12px; align-items:end}
+.controls-inner{display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:end}
 .field label{display:block; font-size:.7rem; letter-spacing:.18em; text-transform:uppercase; color:var(–ink-dim); margin-bottom:7px; font-weight:600}
 .seg{display:flex; border:1px solid var(–line); border-radius:10px; overflow:hidden; background:var(–panel)}
 .seg button{appearance:none; border:0; background:transparent; color:var(–ink-dim); font:600 .88rem ‘Inter’,sans-serif; padding:11px 16px; cursor:pointer; transition:background .25s,color .25s; white-space:nowrap}
@@ -109,6 +109,46 @@ footer{margin:54px 0 26px; color:var(–ink-dim); font-size:.78rem; line-height:
 .card{cursor:pointer; -webkit-tap-highlight-color:transparent; transition:box-shadow .15s,border-color .15s}
 .card.strumming{border-color:var(–accent); box-shadow:0 0 0 2px var(–accent)}
 @media (max-width:560px){.strum small{display:none}}
+
+/* ── filter & sort toolbar (additive) ── */
+details.libbar{margin:18px 0 0; border:1px solid var(–line); border-radius:12px; background:var(–panel)}
+details.libbar summary{cursor:pointer; padding:12px 16px; font:600 .78rem ‘Inter’,system-ui,sans-serif; letter-spacing:.16em; text-transform:uppercase; color:var(–ink-dim); list-style:none; display:flex; align-items:center; gap:10px}
+details.libbar summary::-webkit-details-marker{display:none}
+details.libbar summary::after{content:”+”; margin-left:auto; font-size:1rem; color:var(–accent)}
+details.libbar[open] summary::after{content:”\2212”}
+.libgrid{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding:0 16px 14px}
+.libgrid .lf{display:flex; flex-direction:column; gap:5px}
+.libgrid label{font-size:.64rem; letter-spacing:.14em; text-transform:uppercase; color:var(–ink-dim); font-weight:600}
+.libgrid input[type=text]{background:var(–bg); border:1px solid var(–line); border-radius:8px; padding:9px 10px; font:500 .88rem ‘Inter’,system-ui,sans-serif; color:var(–ink)}
+.libgrid select{padding:9px 30px 9px 10px; font-size:.85rem; background-position:right 10px center}
+.libchips{grid-column:1/-1; display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.chip{appearance:none; border:1px solid var(–line); background:var(–bg); color:var(–ink-dim); font:600 .76rem ‘Inter’,system-ui,sans-serif; border-radius:999px; padding:7px 14px; cursor:pointer; transition:all .2s}
+.chip.on{background:var(–accent); border-color:var(–accent); color:var(–accent-ink)}
+.libstatus{display:none; margin:16px 0 4px; align-items:baseline; gap:14px; flex-wrap:wrap}
+.libstatus.show{display:flex}
+.libstatus .cnt{font-family:‘Poppins’,sans-serif; font-weight:600; font-size:.92rem}
+.libstatus .clr{appearance:none; border:0; background:transparent; color:var(–accent); font:600 .8rem ‘Inter’,sans-serif; cursor:pointer; text-decoration:underline; padding:0}
+.card .lib-meta{font-size:.66rem; color:var(–ink-dim); margin-top:4px; text-align:center}
+.card .lib-meta b{color:var(–ink); font-weight:600}
+input[type=text]:focus-visible{outline:2px solid var(–accent); outline-offset:2px}
+@media (max-width:700px){.libgrid{grid-template-columns:repeat(2,1fr)}}
+
+/* ── sticky reorder & collapse (additive) ── */
+.controls{max-height:92vh; overflow-y:auto; padding-right:2px}
+.field-tuning{margin-bottom:14px; padding-right:40px}
+.field-tuning .seg{display:inline-flex}
+.tuner{margin-top:2px}
+.controls-inner{margin-top:12px}
+.controls .libbar{margin:14px 0 0}
+.ctl-toggle{position:absolute; top:16px; right:0; width:32px; height:32px; border:1px solid var(–line); background:var(–panel); border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(–ink-dim); z-index:2}
+.ctl-toggle:focus-visible{outline:2px solid var(–accent); outline-offset:2px}
+.ctl-toggle svg{transform:rotate(180deg); transition:transform .25s}
+.controls.collapsed .ctl-toggle svg{transform:rotate(0deg)}
+.controls.collapsed .ctl-body{display:none}
+.controls.collapsed{padding:12px 0}
+.ctl-collapsed-label{display:none; font:600 .74rem ‘Inter’,system-ui,sans-serif; letter-spacing:.16em; text-transform:uppercase; color:var(–ink-dim); line-height:32px}
+.controls.collapsed .ctl-collapsed-label{display:inline-block}
+@media (prefers-reduced-motion:reduce){.ctl-toggle svg{transition:none}}
 </style>
 
 </head>
@@ -122,6 +162,18 @@ footer{margin:54px 0 26px; color:var(–ink-dim); font-size:.78rem; line-height:
   </header>
 
   <div class="controls">
+    <button type="button" class="ctl-toggle" id="ctl-toggle" aria-expanded="true" aria-label="Collapse settings"><svg width="12" height="8" viewBox="0 0 12 8" fill="none" aria-hidden="true"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <span class="ctl-collapsed-label">Settings &amp; filters</span>
+    <div class="ctl-body" id="ctl-body">
+    <div class="field field-tuning">
+        <label id="lab-tuning">Tuning</label>
+        <div class="seg" role="group" aria-labelledby="lab-tuning">
+          <button data-t="od" aria-pressed="true">Open D</button>
+          <button data-t="dd" aria-pressed="false">DADGAD</button>
+          <button data-t="og" aria-pressed="false">Open G</button>
+          <button data-t="fa" aria-pressed="false">FACGCE</button>
+        </div>
+      </div>
     <div class="tuner">
       <div class="tuner-label"><span>Tuner</span><small>tap a string — ring switch on to hear</small><span id="oct-read"></span></div>
       <div class="tuner-row" id="tuner-row"></div>
@@ -135,15 +187,6 @@ footer{margin:54px 0 26px; color:var(–ink-dim); font-size:.78rem; line-height:
       </div>
     </div>
     <div class="controls-inner">
-      <div class="field field-tuning">
-        <label id="lab-tuning">Tuning</label>
-        <div class="seg" role="group" aria-labelledby="lab-tuning">
-          <button data-t="od" aria-pressed="true">Open D</button>
-          <button data-t="dd" aria-pressed="false">DADGAD</button>
-          <button data-t="og" aria-pressed="false">Open G</button>
-          <button data-t="fa" aria-pressed="false">FACGCE</button>
-        </div>
-      </div>
       <div class="field">
         <label for="sel-key">Key</label>
         <select id="sel-key"></select>
@@ -154,10 +197,44 @@ footer{margin:54px 0 26px; color:var(–ink-dim); font-size:.78rem; line-height:
       </div>
     </div>
     <div class="tuneline" id="tuneline"></div>
+    <details class="libbar">
+    <summary>Filter &amp; sort chords</summary>
+    <div class="libgrid">
+      <div class="lf"><label for="lf-q">Search name</label><input type="text" id="lf-q" placeholder="e.g. Bm7" autocomplete="off"></div>
+      <div class="lf"><label for="lf-type">Chord type</label><select id="lf-type">
+        <option value="">All types</option><option value="major">Major</option><option value="minor">Minor</option>
+        <option value="sus">Sus</option><option value="power">Power (5)</option><option value="maj7">Maj7 / Maj9</option>
+        <option value="m7">Minor 7 / 9</option><option value="dom7">Dominant 7 / 9</option>
+        <option value="add">Add (9 / 11)</option><option value="6th">6th</option></select></div>
+      <div class="lf"><label for="lf-diff">Difficulty</label><select id="lf-diff">
+        <option value="">All levels</option><option value="beginner">Beginner</option>
+        <option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select></div>
+      <div class="lf"><label for="lf-pos">Position</label><select id="lf-pos">
+        <option value="">Anywhere</option><option value="open">Open (frets 0–4)</option>
+        <option value="mid">Mid (5–8)</option><option value="high">High (9+)</option></select></div>
+      <div class="lf"><label for="lf-fing">Fingers</label><select id="lf-fing">
+        <option value="">Any</option><option value="1">1 or fewer</option><option value="2">2 or fewer</option>
+        <option value="3">3 or fewer</option><option value="4">4</option></select></div>
+      <div class="lf"><label for="lf-sort">Sort</label><select id="lf-sort">
+        <option value="">Progression order</option><option value="easy">Easiest first</option>
+        <option value="fingers">Fewest fingers</option><option value="opens">Most open strings</option>
+        <option value="pos">Lowest fret</option><option value="common">Most common</option>
+        <option value="alpha">A → Z</option><option value="fret-asc">Fretted strings ↑</option>
+        <option value="fret-desc">Fretted strings ↓</option></select></div>
+      <div class="libchips">
+        <button type="button" class="chip" id="lf-barre">Barre chords only</button>
+        <button type="button" class="chip" id="lf-open">Has open strings</button>
+      </div>
+    </div>
+  </details>
+    </div>
   </div>
 
   <div class="prog-banner" id="banner"></div>
   <div id="capo"></div>
+
+  <div class="libstatus" id="libstatus"><span class="cnt" id="libcnt"></span><button type="button" class="clr" id="libclear">Clear filters — back to progressions</button></div>
+
   <main id="options"></main>
 </div>
 
@@ -301,7 +378,8 @@ function render(){
       const frets=ch[1].map(f=>f<0?-1:f+shift);
       const barres=(ch[2]||[]).map(b=>[b[0]+shift,b[1],b[2]]);
       const nm=transposeName(numerals[ci],ch[0],state.key);
-      html+=`<div class="card"><div class="cname">${nm}</div>${diagramSVG(frets,shift,T.accent,barres)}</div>`;
+      const _m=chordMeta(frets,ch[0],DEG[numerals[ci]][1]==='m',barres);
+      html+=`<div class="card" data-name="${nm}" data-type="${_m.type}" data-fretted="${_m.frettedN}" data-difficulty="${_m.diff}" data-pos="${_m.pos}" data-frets="[${frets.join(',')}]"><div class="cname">${nm}</div>${diagramSVG(frets,shift,T.accent,barres)}</div>`;
     });
     html+='</div></section>';
   });
@@ -448,6 +526,7 @@ function strumChord(card,frets){
   optEl.addEventListener('click',e=>{
     const card=(e.target&&e.target.closest)?e.target.closest('.card'):null;
     if(!card) return;
+    if(card.dataset&&card.dataset.frets){ try{ strumChord(card, JSON.parse(card.dataset.frets)); return; }catch(err){} }
     const cards=Array.prototype.slice.call(optEl.querySelectorAll('.card'));
     const idx=cards.indexOf(card);
     if(idx<0) return;
@@ -457,6 +536,136 @@ function strumChord(card,frets){
     const ch=DATA[state.t][state.prog].o[oi][ci];
     const frets=ch[1].map(f=>f<0?-1:f+shift);
     strumChord(card,frets);
+  });
+})();
+
+/* ── chord library: filter & sort (additive) ── */
+function chordMeta(frets,suffix,minor,barres){
+  const fretted=frets.filter(f=>f>0), opens=frets.filter(f=>f===0).length;
+  const pos=fretted.length?Math.min(...fretted):0;
+  const span=fretted.length?Math.max(...fretted)-pos:0;
+  let run=1,best=1;
+  for(let i=1;i<6;i++){ if(frets[i]>0&&frets[i]===frets[i-1]&&frets[i]===pos){run++;best=Math.max(best,run);} else run=1; }
+  const barre=(barres&&barres.length>0)||best>=3;
+  const fingers=Math.max(0,fretted.length-((barres&&barres.length)?Math.max(0,(barres[0][2]-barres[0][1])): (best>=3?best-1:0)));
+  const s=fingers+(barre?2:0)+(span>=3?1:0)+(pos>=8?1:0)+(pos>=12?1:0);
+  const diff=s<=2?'beginner':(s<=4?'intermediate':'advanced');
+  let type;
+  if(/sus/.test(suffix)) type='sus';
+  else if(/^5/.test(suffix)) type='power';
+  else if(!minor&&/^M7|^M9/.test(suffix)) type='maj7';
+  else if(minor&&/^7|^9/.test(suffix)) type='m7';
+  else if(!minor&&/^7|^9/.test(suffix)) type='dom7';
+  else if(/add/.test(suffix)) type='add';
+  else if(/^6/.test(suffix)) type='6th';
+  else type=minor?'minor':'major';
+  return {type,diff,pos,fingers,opens,span,frettedN:fretted.length,barre};
+}
+
+const LF={q:'',type:'',diff:'',pos:'',fing:'',sort:'',barre:false,open:false};
+const lfActive=()=>!!(LF.q||LF.type||LF.diff||LF.pos||LF.fing||LF.sort||LF.barre||LF.open);
+
+function libraryPool(){
+  const T=TUNINGS[state.t], shift=(PC[state.key]-PC[T.nativeKey]+12)%12;
+  const map=new Map();
+  DATA[state.t].forEach(p=>{
+    const nums=p.n.split(' ');
+    p.o.forEach(row=>row.forEach((ch,ci)=>{
+      const frets=ch[1].map(f=>f<0?-1:f+shift);
+      const name=transposeName(nums[ci],ch[0],state.key);
+      const k=name+'|'+frets.join(',');
+      const e=map.get(k);
+      if(e){e.freq++;return;}
+      const barres=(ch[2]||[]).map(b=>[b[0]+shift,b[1],b[2]]);
+      map.set(k,{name,frets,barres,suffix:ch[0],minor:DEG[nums[ci]][1]==='m',freq:1});
+    }));
+  });
+  const out=[...map.values()];
+  out.forEach(e=>e.m=chordMeta(e.frets,e.suffix,e.minor,e.barres));
+  return out;
+}
+
+function renderLibrary(){
+  const T=TUNINGS[state.t];
+  const shift=(PC[state.key]-PC[T.nativeKey]+12)%12;
+  let pool=libraryPool();
+  const q=LF.q.trim().toLowerCase();
+  if(q) pool=pool.filter(e=>e.name.toLowerCase().includes(q));
+  if(LF.type) pool=pool.filter(e=>e.m.type===LF.type);
+  if(LF.diff) pool=pool.filter(e=>e.m.diff===LF.diff);
+  if(LF.pos==='open') pool=pool.filter(e=>e.m.pos<=4);
+  if(LF.pos==='mid') pool=pool.filter(e=>e.m.pos>=5&&e.m.pos<=8);
+  if(LF.pos==='high') pool=pool.filter(e=>e.m.pos>=9);
+  if(LF.fing) pool=pool.filter(e=>e.m.fingers<=+LF.fing&&(+LF.fing<4||e.m.fingers===4));
+  if(LF.barre) pool=pool.filter(e=>e.m.barre);
+  if(LF.open) pool=pool.filter(e=>e.m.opens>0);
+  const by={
+    easy:(a,b)=>(a.m.fingers+(a.m.barre?2:0)+a.m.span+a.m.pos/4)-(b.m.fingers+(b.m.barre?2:0)+b.m.span+b.m.pos/4),
+    fingers:(a,b)=>a.m.fingers-b.m.fingers||a.m.pos-b.m.pos,
+    opens:(a,b)=>b.m.opens-a.m.opens||a.m.pos-b.m.pos,
+    pos:(a,b)=>a.m.pos-b.m.pos||a.m.fingers-b.m.fingers,
+    common:(a,b)=>b.freq-a.freq||a.m.pos-b.m.pos,
+    alpha:(a,b)=>a.name.localeCompare(b.name),
+    'fret-asc':(a,b)=>a.m.frettedN-b.m.frettedN||a.m.pos-b.m.pos,
+    'fret-desc':(a,b)=>b.m.frettedN-a.m.frettedN||a.m.pos-b.m.pos
+  };
+  if(by[LF.sort]) pool.sort(by[LF.sort]); else pool.sort((a,b)=>a.name.localeCompare(b.name)||a.m.pos-b.m.pos);
+  const total=pool.length, CAP=120;
+  const shown=pool.slice(0,CAP);
+  const cnt=document.getElementById('libcnt');
+  if(cnt) cnt.textContent=`${total} voicing${total===1?'':'s'} in ${T.label} · key of ${state.key}${total>CAP?` — showing first ${CAP}`:''}`;
+  let html='<section class="option"><div class="cards">';
+  shown.forEach(e=>{
+    const dlab=e.m.diff.charAt(0).toUpperCase()+e.m.diff.slice(1);
+    html+=`<div class="card" data-name="${e.name}" data-type="${e.m.type}" data-fretted="${e.m.frettedN}" data-difficulty="${e.m.diff}" data-pos="${e.m.pos}" data-frets="[${e.frets.join(',')}]">`
+        +`<div class="cname">${e.name}</div>${diagramSVG(e.frets,shift,T.accent,e.barres)}`
+        +`<div class="lib-meta"><b>${dlab}</b> · fret ${e.m.pos||'open'} · ${e.m.fingers} finger${e.m.fingers===1?'':'s'}${e.m.barre?' · barre':''}</div></div>`;
+  });
+  html+='</div></section>';
+  document.getElementById('options').innerHTML=html;
+  document.getElementById('banner').innerHTML=`<span class="keyname">Chord Library</span><span class="numerals">${T.label}</span><span class="chordseq">filtered view — clear to return to progressions</span>`;
+  document.getElementById('capo').innerHTML='';
+}
+
+function lfApply(){
+  const st=document.getElementById('libstatus');
+  if(lfActive()){ if(st) st.classList.add('show'); renderLibrary(); }
+  else { if(st) st.classList.remove('show'); render(); }
+}
+(function(){
+  const g=id=>document.getElementById(id);
+  const bind=(id,key,ev)=>{ const e=g(id); if(e&&e.addEventListener) e.addEventListener(ev||'change',()=>{ LF[key]=e.value; lfApply(); }); };
+  bind('lf-q','q','input'); bind('lf-type','type'); bind('lf-diff','diff');
+  bind('lf-pos','pos'); bind('lf-fing','fing'); bind('lf-sort','sort');
+  [['lf-barre','barre'],['lf-open','open']].forEach(([id,key])=>{
+    const e=g(id); if(e&&e.addEventListener) e.addEventListener('click',()=>{ LF[key]=!LF[key]; e.classList.toggle('on',LF[key]); lfApply(); });
+  });
+  const clr=g('libclear');
+  if(clr&&clr.addEventListener) clr.addEventListener('click',()=>{
+    LF.q=LF.type=LF.diff=LF.pos=LF.fing=LF.sort=''; LF.barre=LF.open=false;
+    ['lf-q','lf-type','lf-diff','lf-pos','lf-fing','lf-sort'].forEach(id=>{const e=g(id); if(e) e.value='';});
+    ['lf-barre','lf-open'].forEach(id=>{const e=g(id); if(e&&e.classList) e.classList.remove('on');});
+    lfApply();
+  });
+  // keep library view in sync when tuning/key/progression change
+  const sk=g('sel-key'), sp=g('sel-prog');
+  if(sk&&sk.addEventListener) sk.addEventListener('change',()=>{ if(lfActive()) renderLibrary(); });
+  if(sp&&sp.addEventListener) sp.addEventListener('change',()=>{ if(lfActive()) renderLibrary(); });
+  document.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',()=>{ if(lfActive()) renderLibrary(); }));
+})();
+
+/* ── sticky collapse toggle (additive) ── */
+(function(){
+  const t=document.getElementById('ctl-toggle');
+  if(!t||!t.addEventListener) return;
+  t.addEventListener('click',()=>{
+    if(typeof document.querySelector!=='function') return;
+    const c=document.querySelector('.controls');
+    if(!c) return;
+    c.classList.toggle('collapsed');
+    const col=c.classList.contains('collapsed');
+    t.setAttribute('aria-expanded', col?'false':'true');
+    t.setAttribute('aria-label', col?'Expand settings':'Collapse settings');
   });
 })();
 </script>
