@@ -34,7 +34,7 @@ h1 .cup{height:1em; width:auto; vertical-align:-0.12em; margin-right:.22em; disp
 .byline{color:var(–ink-dim); font-size:.86rem; margin-top:8px}
 
 /* ── controls ── */
-.controls{position:relative; z-index:20; background:var(–bg); padding:18px 0 14px; border-bottom:1px solid var(–line)}
+.controls{position:sticky; top:0; z-index:20; background:var(–bg); padding:18px 0 14px; border-bottom:1px solid var(–line)}
 .controls-inner{display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:end}
 .field label{display:block; font-size:.7rem; letter-spacing:.18em; text-transform:uppercase; color:var(–ink-dim); margin-bottom:7px; font-weight:600}
 .seg{display:flex; border:1px solid var(–line); border-radius:10px; overflow:hidden; background:var(–panel)}
@@ -192,7 +192,7 @@ input[type=text]:focus-visible{outline:2px solid var(–accent); outline-offset:
           <button type="button" data-g="105" class="on">Medium</button>
           <button type="button" data-g="45">Fast</button>
         </div>
-        <small>tap any chord to hear it</small>
+        <small>click chord to hear it</small>
       </div>
     </div>
     <div class="controls-inner">
