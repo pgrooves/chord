@@ -654,27 +654,6 @@ body.dark .rec-hint{background:#211f18}
 
 </head>
 <body>
-<div id="build-banner" style="position:fixed;top:0;left:0;right:0;z-index:9999;background:#16a34a;color:#fff;font:700 11px/1.45 system-ui,sans-serif;text-align:center;padding:5px 8px;letter-spacing:.03em">BUILD v8 — loading diagnostics… (tap to dismiss)</div>
-<script>
-(function(){
-  var x=document.getElementById('build-banner');
-  if(!x) return;
-  x.addEventListener('click',function(){x.remove();});
-  function report(){
-    try{
-      var root=getComputedStyle(document.documentElement);
-      var acc=root.getPropertyValue('--accent').trim()||'(unset)';
-      function colOf(sel){var el=document.querySelector(sel);return el?getComputedStyle(el).color:'(no el)';}
-      var cap=colOf('.rec-tr-cap');
-      var hp=colOf('.rec-hp-note');
-      x.textContent='v8 | --accent:'+acc+' | cap:'+cap+' | hp:'+hp+' (tap to close)';
-    }catch(e){ x.textContent='v8 ERROR: '+e.message; x.style.background='#dc2626'; }
-  }
-  // report after scripts have run
-  if(document.readyState==='complete') setTimeout(report,400);
-  else window.addEventListener('load',function(){setTimeout(report,400);});
-})();
-</script>
 <script>try{if(localStorage.getItem('capo-theme')==='dark'){document.documentElement.classList.add('dark');document.body.classList.add('dark');}}catch(e){}</script>
 <style id="accent-css"></style>
 <div id="mosaic" aria-hidden="true"></div>
@@ -2923,27 +2902,33 @@ function lfApply(){
 
 <script>
 (function(){
-  const sw=document.getElementById('theme-switch');
-  if(!sw) return;
-  let on=false;
-  try{ on=localStorage.getItem('capo-theme')==='dark'; }catch(e){}
+  // Resilient theme toggle: delegated on document so it works regardless of
+  // script order, re-renders, or any earlier error on the page.
+  function isOn(){ try{ return localStorage.getItem('capo-theme')==='dark'; }catch(e){ return document.body.classList.contains('dark'); } }
   function refreshDiagrams(){
     try{ if(typeof render==='function' && !document.body.classList.contains('mode-builder')) render(); }catch(e){}
     try{ if(typeof window.__capoRedrawBuilder==='function') window.__capoRedrawBuilder(); }catch(e){}
   }
-  function apply(initial){
+  function paint(on){
     document.documentElement.classList.toggle('dark',on);
     document.body.classList.toggle('dark',on);
-    sw.setAttribute('aria-checked',String(on));
-    sw.setAttribute('aria-pressed',String(on));
-    sw.setAttribute('aria-label', on?'Dark mode on':'Dark mode off');
-    if(!initial) refreshDiagrams();
+    var sw=document.getElementById('theme-switch');
+    if(sw){
+      sw.setAttribute('aria-checked',String(on));
+      sw.setAttribute('aria-pressed',String(on));
+      sw.setAttribute('aria-label', on?'Dark mode on':'Dark mode off');
+    }
   }
-  apply(true);
-  sw.addEventListener('click',function(){
-    on=!on;
-    try{ localStorage.setItem('capo-theme', on?'dark':'light'); }catch(e){}
-    apply(false);
+  // initial state
+  paint(isOn());
+  // delegated click — catches taps even if the button is replaced or bound late
+  document.addEventListener('click',function(e){
+    var sw=e.target && e.target.closest ? e.target.closest('#theme-switch') : null;
+    if(!sw) return;
+    var on=!(localStorage.getItem('capo-theme')==='dark');
+    try{ localStorage.setItem('capo-theme', on?'dark':'light'); }catch(err){}
+    paint(on);
+    refreshDiagrams();
   });
 })();
 </script>
