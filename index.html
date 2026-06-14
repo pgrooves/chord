@@ -194,6 +194,81 @@ body.mode-builder #banner,
 body.mode-builder #capo,
 body.mode-builder #libstatus{display:none !important}
 
+/* ── re-chord-er module (additive) ── */
+#rechorder{display:none}
+body.mode-rechorder #rechorder{display:block}
+body.mode-rechorder #options,
+body.mode-rechorder #banner,
+body.mode-rechorder #capo,
+body.mode-rechorder #libstatus,
+body.mode-rechorder #builder{display:none !important}
+
+.rec-banner{margin:26px 0 4px; display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 18px}
+.rec-banner .keyname{font-family:Poppins,sans-serif; font-weight:800; font-size:1.5rem; letter-spacing:.04em}
+.rec-banner .numerals{color:#1f8f7e; font-weight:600; letter-spacing:.14em}
+.rec-banner .chordseq{color:#6e6a5e; font-size:.95rem}
+@media (max-width:560px){.rec-banner .keyname{font-size:1.25rem}}
+
+/* metronome on/off toggle local to this module */
+.rec-mettoggle{display:inline-flex; align-items:center; gap:8px; margin-left:auto; align-self:center}
+.rec-mettoggle .rmt-lab{font-size:.6rem; letter-spacing:.14em; text-transform:uppercase; color:#6e6a5e; font-weight:700}
+.rec-mettoggle .sseg{display:flex; border:1px solid #e3ddd0; border-radius:8px; overflow:hidden; background:#ffffff}
+.rec-mettoggle .sseg button{appearance:none; border:0; background:transparent; color:#6e6a5e; font:600 .74rem Inter,system-ui,sans-serif; padding:7px 14px; cursor:pointer; transition:background .2s,color .2s}
+.rec-mettoggle .sseg button.on{background:#1f8f7e; color:#ffffff}
+.rec-mettoggle .sseg button:focus-visible{outline:2px solid #1f8f7e; outline-offset:2px}
+
+.rec-section{margin:30px 0 6px}
+.rec-head{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.rec-head .rec-title{font-family:Poppins,sans-serif; font-weight:600; font-size:.86rem; letter-spacing:.22em; text-transform:uppercase; color:#17150e}
+.rec-head::after{content:””; flex:1; height:1px; background:#e3ddd0; order:5}
+
+.rec-slots{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:14px}
+@media (max-width:560px){.rec-slots{grid-template-columns:repeat(2,1fr); gap:10px}}
+.rec-slot{background:#ffffff; border:1px solid #e3ddd0; border-radius:12px; min-height:150px; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:0 1px 3px rgba(40,35,20,.07); position:relative}
+.rec-slot.empty{border-style:dashed; cursor:pointer; color:#6e6a5e; -webkit-tap-highlight-color:transparent; transition:border-color .15s,color .15s}
+.rec-slot.empty:hover{border-color:#1f8f7e; color:#1f8f7e}
+.rec-slot.empty .mic{display:flex; align-items:center; justify-content:center; color:#1f8f7e}
+.rec-slot.empty .mic .mic-ic{display:block}
+.rec-slot.armed .mic{color:#1f8f7e}
+.rec-slot.recording .mic{color:#b03036}
+.rec-slot.empty .mic-lab{font-size:.64rem; letter-spacing:.16em; text-transform:uppercase; margin-top:8px}
+.rec-slot.armed{border-style:solid; border-color:#1f8f7e; color:#1f8f7e; box-shadow:0 0 0 2px #1f8f7e}
+.rec-slot.recording{border-style:solid; border-color:#b03036; box-shadow:0 0 0 2px #b03036}
+.rec-slot.recording .mic{color:#b03036}
+.rec-slot.recording .mic-lab{color:#b03036}
+.rec-slot .rec-dot{display:inline-block; width:11px; height:11px; border-radius:50%; background:#b03036; margin-bottom:8px; animation:recPulse 1s ease-in-out infinite}
+@keyframes recPulse{0%,100%{opacity:1}50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.rec-slot .rec-dot{animation:none}}
+.rec-slot.filled{cursor:default; padding:12px 8px 10px; transition:box-shadow .15s,border-color .15s}
+.rec-slot .rec-cname{font-family:Poppins,sans-serif; font-weight:600; color:#111; font-size:.86rem; margin-bottom:6px; text-align:center; min-height:1.1em}
+.rec-slot canvas.rec-wave{width:100%; height:54px; display:block}
+.rec-slot .slot-clear{position:absolute; top:6px; right:6px; width:20px; height:20px; border-radius:50%; border:1px solid #e3ddd0; background:#ffffff; color:#6e6a5e; font-size:.8rem; line-height:1; cursor:pointer; display:none; align-items:center; justify-content:center; padding:0; z-index:2}
+.rec-slot.filled .slot-clear{display:flex}
+.rec-slot .slot-clear:hover{border-color:#b03036; color:#b03036}
+.rec-slot .rec-pb-wrap{margin-top:8px; display:flex; flex-direction:column; align-items:center; gap:5px}
+.rec-slot .rec-pb-cap{font-family:Poppins,sans-serif; font-weight:800; font-size:.54rem; letter-spacing:.16em; text-transform:uppercase; color:#1f8f7e; line-height:1; text-align:center}
+.rec-slot .rec-pb{appearance:none; border:0; background:#000000; width:38px; height:38px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; -webkit-tap-highlight-color:transparent}
+.rec-slot .rec-pb svg{width:42%; height:42%; display:block}
+.rec-slot .rec-pb .ic-play{fill:#ffffff}
+.rec-slot .rec-pb .ic-stop{fill:#ffffff; display:none}
+.rec-slot .rec-pb.playing .ic-play{display:none}
+.rec-slot .rec-pb.playing .ic-stop{display:block}
+.rec-slot .rec-pb:focus-visible{outline:2px solid #1f8f7e; outline-offset:3px}
+
+.rec-addslot{display:flex; align-items:center; justify-content:center; min-height:150px; border:1px dashed #e3ddd0; border-radius:12px; background:transparent; cursor:pointer; color:#6e6a5e; font:600 .72rem Inter,system-ui,sans-serif; letter-spacing:.14em; text-transform:uppercase; -webkit-tap-highlight-color:transparent}
+.rec-addslot:hover{border-color:#1f8f7e; color:#1f8f7e}
+
+.rec-hint{margin:10px 0 0; padding:10px 14px; border-left:3px solid #1f8f7e; background:#ffffff; border-radius:0 8px 8px 0; font-size:.82rem; color:#6e6a5e; max-width:640px}
+.rec-hint b{color:#17150e}
+
+/* big fading count-in overlay */
+.rec-count{position:fixed; inset:0; z-index:90; display:none; align-items:center; justify-content:center; pointer-events:none}
+.rec-count.show{display:flex}
+.rec-count .rc-num{font-family:Poppins,sans-serif; font-weight:800; font-size:clamp(7rem,30vw,16rem); color:#1f8f7e; line-height:1; text-shadow:0 4px 30px rgba(0,0,0,.18); opacity:0}
+.rec-count .rc-num.flash{animation:rcFade var(–rc-beat,500ms) ease-in-out}
+@keyframes rcFade{0%{opacity:0; transform:scale(.86)}25%{opacity:1; transform:scale(1)}100%{opacity:0; transform:scale(1.04)}}
+@media (prefers-reduced-motion:reduce){.rec-count .rc-num.flash{animation:none; opacity:1}}
+
 .bld-banner{margin:26px 0 4px; display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 18px}
 .bld-banner .keyname{font-family:Poppins,sans-serif; font-weight:800; font-size:1.5rem; letter-spacing:.04em}
 .bld-banner .numerals{color:#1f8f7e; font-weight:600; letter-spacing:.14em}
@@ -367,6 +442,7 @@ details.metset[open]>summary::after{content:”\2212”}
       <div class="modseg" role="group" aria-label="Module">
         <button type="button" id="mod-reader" data-mode="reader" aria-pressed="true">Chord Reader</button>
         <button type="button" id="mod-builder" data-mode="builder" aria-pressed="false">Chord Builder</button>
+        <button type="button" id="mod-rechorder" data-mode="rechorder" aria-pressed="false">Re-chord-er</button>
       </div>
     </div>
   </header>
@@ -528,6 +604,26 @@ details.metset[open]>summary::after{content:”\2212”}
     <div id="bld-parts"></div>
     <button type="button" class="bld-addpart" id="bld-addpart">+ Add song part</button>
   </div>
+
+  <div id="rechorder">
+    <div class="rec-banner" id="rec-banner"></div>
+    <section class="rec-section">
+      <div class="rec-head">
+        <span class="rec-title">Re-chord-er</span>
+        <span class="rec-mettoggle">
+          <span class="rmt-lab">Metronome</span>
+          <span class="sseg" role="group" aria-label="Metronome during recording">
+            <button type="button" id="rec-met-on" aria-pressed="false">On</button>
+            <button type="button" id="rec-met-off" class="on" aria-pressed="true">Off</button>
+          </span>
+        </span>
+      </div>
+      <div class="rec-slots" id="rec-slots"></div>
+      <p class="rec-hint">Tap an empty box to arm it — you'll hear a <b>one-bar count-in</b> on the metronome, then recording starts on the next <b>“1.”</b> Tap the box again to stop. With metronome <b>Off</b>, the click stops the moment recording begins; with it <b>On</b>, the click continues through your take.</p>
+    </section>
+  </div>
+
+  <div class="rec-count" id="rec-count" aria-hidden="true"><div class="rc-num" id="rec-count-num"></div></div>
 
   <div class="bld-picker" id="bld-picker" aria-hidden="true">
     <div class="bld-picker-panel" role="dialog" aria-label="Choose a chord">
@@ -1810,16 +1906,23 @@ function lfApply(){
   // ── module switching ──
   function setMode(mode){
     const isBuilder=(mode==='builder');
+    const isRechorder=(mode==='rechorder');
+    const isReader=(!isBuilder && !isRechorder);
     if(!isBuilder && typeof stopPlayback==='function') stopPlayback();
+    if(!isRechorder && window.__capoRechorder && window.__capoRechorder.onLeave) window.__capoRechorder.onLeave();
     document.body.classList.toggle('mode-builder',isBuilder);
-    const rb=$('mod-reader'), bb=$('mod-builder');
-    if(rb) rb.setAttribute('aria-pressed', String(!isBuilder));
+    document.body.classList.toggle('mode-rechorder',isRechorder);
+    const rb=$('mod-reader'), bb=$('mod-builder'), cb=$('mod-rechorder');
+    if(rb) rb.setAttribute('aria-pressed', String(isReader));
     if(bb) bb.setAttribute('aria-pressed', String(isBuilder));
+    if(cb) cb.setAttribute('aria-pressed', String(isRechorder));
     if(isBuilder) renderBuilder();
+    if(isRechorder && window.__capoRechorder && window.__capoRechorder.render) window.__capoRechorder.render();
   }
-  const rb=$('mod-reader'), bb=$('mod-builder');
+  const rb=$('mod-reader'), bb=$('mod-builder'), cb=$('mod-rechorder');
   if(rb) rb.addEventListener('click',()=>setMode('reader'));
   if(bb) bb.addEventListener('click',()=>setMode('builder'));
+  if(cb) cb.addEventListener('click',()=>setMode('rechorder'));
 
   // resize every part's default chord-box count to match a time signature, without ever
   // deleting a chord: grow by padding empty boxes, shrink only by trimming EMPTY trailing boxes
@@ -1863,6 +1966,391 @@ function lfApply(){
   // initial render so it's ready when first switched to
   resizePartsToSig();
   renderBuilder();
+})();
+</script>
+
+<script>
+/* ── re-chord-er module (additive) ──
+   Records guitar audio from the mic into boxes. Uses the existing metronome engine
+   (window.__capoMet) as the single beat clock for the count-in and downbeat timing,
+   and never modifies it: to start the click it calls startAligned(); to stop it, it
+   clicks the existing #met-play button (the same action the user's pause button takes).
+   In-session memory only — recordings are not persisted across reloads. */
+(function(){
+  if(typeof document==='undefined') return;
+  const $=id=>document.getElementById(id);
+
+  // one box per felt beat of the current time signature, matching the builder's default count
+  const SIG_GROUPS={
+    '2/4':2,'3/4':3,'4/4':4,'5/4':5,'6/8':2,'7/8':3,'9/8':3,'12/8':4
+  };
+  function currentSig(){ const s=$('met-sig'); return s?s.value:'4/4'; }
+  function feltBeats(){ return SIG_GROUPS[currentSig()]||4; }
+
+  // module state: a flat list of slots; each is null (empty) or {url, buffer, audio}
+  const REC={
+    slots:[null,null,null,null],
+    metOn:false,            // local toggle: keep metronome audible through the take
+    armedIdx:-1,            // slot currently arming/recording, or -1
+    state:'idle',           // 'idle' | 'arming' | 'recording'
+    mediaRecorder:null,
+    chunks:[],
+    stream:null,
+    countTimer:null,
+    startTimer:null,
+    playingIdx:-1
+  };
+
+  function met(){ return window.__capoMet; }
+  function audioCtx(){
+    if(!window.__capoMetCtx){
+      try{ window.__capoMetCtx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){}
+    }
+    return window.__capoMetCtx||null;
+  }
+
+  // stop the audible metronome the same way the user's pause button does: click #met-play
+  // while it's playing. harmless if it's already stopped.
+  function stopMetronomeAudible(){
+    const m=met();
+    if(m && m.isPlaying && m.isPlaying()){
+      const b=$('met-play'); if(b) b.click();
+    }
+  }
+  // ensure the metronome clock is running and audible (for the count-in). returns the
+  // audioContext time of the next downbeat to align recording to.
+  function ensureMetronomeRunning(){
+    const m=met(); if(!m) return null;
+    if(!(m.isPlaying && m.isPlaying())){
+      // start it through the public aligned-start so it uses all current settings
+      if(m.startAligned) m.startAligned();
+    }
+    return m.nextDownbeatTime ? m.nextDownbeatTime() : null;
+  }
+
+  // ── rendering ──
+  function slotHTML(i){
+    const s=REC.slots[i];
+    const micSVG='<svg class="mic-ic" viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3z" fill="currentColor"/><path d="M7 11a5 5 0 0 0 10 0M12 16v3M9 19h6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    if(!s){
+      const arming=(REC.armedIdx===i);
+      const cls = arming ? (REC.state==='recording'?'recording':'armed') : 'empty';
+      const showDot = (REC.state==='recording' && arming);
+      const lab = REC.state==='recording'&&arming ? 'Recording — tap to stop'
+                : arming ? 'Counting in…'
+                : 'Tap to record';
+      const icon = showDot ? '<span class="rec-dot"></span>'
+                 : `<span class="mic">${micSVG}</span>`;
+      return `<div class="rec-slot ${cls}" data-i="${i}" role="button" tabindex="0" aria-label="${lab}">`
+        +`${icon}<span class="mic-lab">${lab}</span></div>`;
+    }
+    return `<div class="rec-slot filled" data-i="${i}">`
+      +`<button type="button" class="slot-clear" data-i="${i}" aria-label="Delete recording">&times;</button>`
+      +`<div class="rec-cname">Take ${i+1}</div>`
+      +`<canvas class="rec-wave" data-i="${i}" width="300" height="54"></canvas>`
+      +`<div class="rec-pb-wrap"><span class="rec-pb-cap">Recording Playback</span>`
+      +`<button type="button" class="rec-pb${REC.playingIdx===i?' playing':''}" data-i="${i}" aria-label="Play recording" aria-pressed="${REC.playingIdx===i?'true':'false'}">`
+      +`<svg class="ic-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5v14l12-7z"/></svg>`
+      +`<svg class="ic-stop" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>`
+      +`</button></div></div>`;
+  }
+
+  function render(){
+    const bn=$('rec-banner');
+    const m=met();
+    const label = (window.__capoState && window.__capoState.tuningLabel) ? '' : '';
+    if(bn) bn.innerHTML=`<span class="keyname">Re-chord-er</span>`
+      +`<span class="chordseq">record guitar into any box — count-in &amp; timing follow the metronome's current tempo and time signature</span>`;
+    const wrap=$('rec-slots'); if(!wrap) return;
+    let html='';
+    for(let i=0;i<REC.slots.length;i++) html+=slotHTML(i);
+    html+=`<button type="button" class="rec-addslot" id="rec-addslot" aria-label="Add recording box">+ Box</button>`;
+    wrap.innerHTML=html;
+    // draw waveforms for filled slots
+    for(let i=0;i<REC.slots.length;i++){
+      const s=REC.slots[i];
+      if(s&&s.peaks){ const c=wrap.querySelector(`canvas.rec-wave[data-i="${i}"]`); if(c) drawWave(c,s.peaks); }
+    }
+    // reflect toggle
+    const on=$('rec-met-on'), off=$('rec-met-off');
+    if(on){ on.classList.toggle('on',REC.metOn); on.setAttribute('aria-pressed',String(REC.metOn)); }
+    if(off){ off.classList.toggle('on',!REC.metOn); off.setAttribute('aria-pressed',String(!REC.metOn)); }
+  }
+
+  // grow/shrink default box count to match the time signature, never deleting a recording:
+  // pad with empties, trim only EMPTY trailing boxes
+  function resizeToSig(){
+    const want=feltBeats();
+    while(REC.slots.length<want) REC.slots.push(null);
+    while(REC.slots.length>want && REC.slots[REC.slots.length-1]==null) REC.slots.pop();
+  }
+
+  // ── waveform ──
+  // reduce an AudioBuffer to N peak values (max abs amplitude per bucket)
+  function computePeaks(buffer,n){
+    const ch=buffer.getChannelData(0);
+    const block=Math.floor(ch.length/n)||1;
+    const peaks=new Array(n).fill(0);
+    for(let i=0;i<n;i++){
+      let max=0;
+      const start=i*block, end=Math.min(start+block,ch.length);
+      for(let j=start;j<end;j++){ const v=Math.abs(ch[j]); if(v>max) max=v; }
+      peaks[i]=max;
+    }
+    // normalize
+    const m=Math.max.apply(null,peaks)||1;
+    return peaks.map(p=>p/m);
+  }
+  function drawWave(canvas,peaks){
+    const dpr=window.devicePixelRatio||1;
+    const cssW=canvas.clientWidth||300, cssH=canvas.clientHeight||54;
+    canvas.width=cssW*dpr; canvas.height=cssH*dpr;
+    const ctx=canvas.getContext('2d'); if(!ctx) return;
+    ctx.scale(dpr,dpr);
+    ctx.clearRect(0,0,cssW,cssH);
+    const mid=cssH/2;
+    const n=peaks.length;
+    const bw=cssW/n;
+    ctx.fillStyle='#1f8f7e';
+    for(let i=0;i<n;i++){
+      const h=Math.max(1.5,peaks[i]*(cssH*0.92));
+      const x=i*bw;
+      ctx.fillRect(x, mid-h/2, Math.max(1,bw*0.6), h);
+    }
+  }
+
+  // ── count-in overlay ──
+  function showCount(num){
+    const ov=$('rec-count'), el=$('rec-count-num'); if(!ov||!el) return;
+    ov.classList.add('show'); ov.setAttribute('aria-hidden','false');
+    el.textContent=String(num);
+    el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+  }
+  function hideCount(){
+    const ov=$('rec-count'); if(ov){ ov.classList.remove('show'); ov.setAttribute('aria-hidden','true'); }
+  }
+
+  // ── recording flow ──
+  async function armSlot(i){
+    if(REC.state!=='idle') return;
+    // explicit, non-silent guards so a failed click never just "does nothing"
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      alert('Recording needs microphone access, which the browser only allows over a secure connection.\n\nOpen this app via a web address (https://…) or http://localhost rather than as a local file, then try again.');
+      return;
+    }
+    // get mic first so the permission prompt happens before the count.
+    // race against a timeout: in sandboxed iframes getUserMedia can hang without
+    // ever resolving OR rejecting, which would otherwise look like a dead click.
+    let stream;
+    try{
+      stream=await Promise.race([
+        navigator.mediaDevices.getUserMedia({audio:true}),
+        new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),8000))
+      ]);
+    }catch(err){
+      const name=err&&err.name?err.name:'';
+      const msg=err&&err.message?err.message:'';
+      if(msg==='timeout'){
+        alert('The microphone request did not respond. This usually means the page is running in a sandbox that blocks mic access (e.g. an in-app preview).\n\nDownload the file and open it over http://localhost or your https:// site to record.');
+      }else if(name==='NotAllowedError'||name==='SecurityError'){
+        alert('Microphone access was blocked. Allow mic access for this site in your browser settings, then try again.');
+      }else if(name==='NotFoundError'){
+        alert('No microphone was found on this device.');
+      }else{
+        alert('Could not start recording: '+(msg||'microphone unavailable')+'.');
+      }
+      return;
+    }
+    REC.stream=stream;
+    REC.armedIdx=i; REC.state='arming';
+    render();
+
+    const ctx=audioCtx();
+    // browsers start the audio clock suspended until a gesture — resume it now
+    if(ctx && ctx.state==='suspended'){ try{ await ctx.resume(); }catch(e){} }
+    const m=met();
+    const beats=feltBeats();
+    const spb = (m&&m.secsPerBeat)?m.secsPerBeat():0.5;
+    const barLen = beats*spb;
+    const wasPlaying = !!(m&&m.isPlaying&&m.isPlaying());
+
+    // start/locate the metronome and get the next downbeat to align to
+    let downbeat=ensureMetronomeRunning();
+    const now = ctx?ctx.currentTime:(performance.now()/1000);
+    if(!downbeat||downbeat<now+0.05){ downbeat=now+spb; }
+
+    // We need a FULL audible bar of count-in before recording. If the metronome was just
+    // started fresh, its next downbeat is only moments away (the very first "1"), so push
+    // the recording start to the following downbeat so the whole first bar counts in.
+    // If it was already playing, the next downbeat already gives us a clean bar to count.
+    if(!wasPlaying){ downbeat += barLen; }
+    // guard: make sure there's room for the count-in to begin in the future
+    while(downbeat - barLen < now + 0.04){ downbeat += barLen; }
+
+    // the count-in occupies the bar ENDING on `downbeat`: beats fall at
+    // downbeat - beats*spb + k*spb for k=0..beats-1; recording starts at `downbeat`.
+    const barStart = downbeat - barLen;
+    const beatMs=Math.round(spb*1000);
+    document.documentElement.style.setProperty('--rc-beat', beatMs+'ms');
+
+    // schedule the visible count numbers on the wall clock, offset from the audio clock
+    function scheduleCount(){
+      for(let k=0;k<beats;k++){
+        const tAudio = barStart + k*spb;
+        const delay = Math.max(0,(tAudio-(ctx?ctx.currentTime:now))*1000);
+        setTimeout(()=>{ if(REC.state==='arming'&&REC.armedIdx===i) showCount(k+1); }, delay);
+      }
+    }
+    scheduleCount();
+
+    // begin actual recording exactly at the downbeat
+    const startDelay=Math.max(0,(downbeat-(ctx?ctx.currentTime:now))*1000);
+    REC.startTimer=setTimeout(()=>beginRecording(i), startDelay);
+  }
+
+  function beginRecording(i){
+    if(REC.armedIdx!==i){ return; }
+    hideCount();
+    // honor the local toggle: if OFF, silence the metronome right on the "1"
+    if(!REC.metOn) stopMetronomeAudible();
+
+    let mr;
+    try{
+      mr=new MediaRecorder(REC.stream);
+    }catch(err){
+      try{ mr=new MediaRecorder(REC.stream,{mimeType:'audio/webm'}); }catch(e2){
+        alert('Recording is not supported in this browser.');
+        cleanupStream(); REC.state='idle'; REC.armedIdx=-1; render(); return;
+      }
+    }
+    REC.mediaRecorder=mr; REC.chunks=[];
+    mr.ondataavailable=e=>{ if(e.data&&e.data.size>0) REC.chunks.push(e.data); };
+    mr.onstop=()=>finalizeRecording(i);
+    mr.start();
+    REC.state='recording';
+    render();
+  }
+
+  function stopRecording(){
+    if(REC.state!=='recording'||!REC.mediaRecorder) return;
+    try{ REC.mediaRecorder.stop(); }catch(e){}
+  }
+
+  async function finalizeRecording(i){
+    // always pause the metronome after a take
+    stopMetronomeAudible();
+    const type=(REC.mediaRecorder&&REC.mediaRecorder.mimeType)||'audio/webm';
+    const blob=new Blob(REC.chunks,{type});
+    const url=URL.createObjectURL(blob);
+    cleanupStream();
+
+    // decode for the waveform
+    let peaks=null;
+    try{
+      const buf=await blob.arrayBuffer();
+      const ctx=audioCtx();
+      if(ctx){
+        const audioBuf=await ctx.decodeAudioData(buf.slice(0));
+        peaks=computePeaks(audioBuf,56);
+      }
+    }catch(e){ /* waveform optional */ }
+
+    const audio=new Audio(url);
+    audio.preload='auto';
+    audio.onended=()=>{ REC.playingIdx=-1; render(); };
+    REC.slots[i]={url,audio,peaks:peaks||new Array(56).fill(0.15)};
+    REC.state='idle'; REC.armedIdx=-1;
+    REC.mediaRecorder=null; REC.chunks=[];
+    render();
+  }
+
+  function cleanupStream(){
+    if(REC.stream){ try{ REC.stream.getTracks().forEach(t=>t.stop()); }catch(e){} REC.stream=null; }
+  }
+
+  function clearSlot(i){
+    const s=REC.slots[i];
+    if(s){ try{ if(s.audio){s.audio.pause();} URL.revokeObjectURL(s.url); }catch(e){} }
+    if(REC.playingIdx===i) REC.playingIdx=-1;
+    REC.slots[i]=null;
+    // trim trailing empties back toward the time-signature default
+    resizeToSig();
+    render();
+  }
+
+  function togglePlay(i){
+    const s=REC.slots[i]; if(!s||!s.audio) return;
+    // stop any other playing take
+    if(REC.playingIdx!==-1 && REC.playingIdx!==i){
+      const o=REC.slots[REC.playingIdx]; if(o&&o.audio){ o.audio.pause(); o.audio.currentTime=0; }
+    }
+    if(REC.playingIdx===i){
+      s.audio.pause(); s.audio.currentTime=0; REC.playingIdx=-1;
+    }else{
+      s.audio.currentTime=0; s.audio.play().catch(()=>{}); REC.playingIdx=i;
+    }
+    render();
+  }
+
+  // cancel any in-progress arm/record when leaving the module
+  function onLeave(){
+    if(REC.countTimer){ clearTimeout(REC.countTimer); REC.countTimer=null; }
+    if(REC.startTimer){ clearTimeout(REC.startTimer); REC.startTimer=null; }
+    if(REC.state==='recording'){ try{ REC.mediaRecorder&&REC.mediaRecorder.stop(); }catch(e){} }
+    hideCount(); cleanupStream();
+    if(REC.state!=='idle'){ REC.state='idle'; REC.armedIdx=-1; }
+    // stop any playback
+    if(REC.playingIdx!==-1){ const o=REC.slots[REC.playingIdx]; if(o&&o.audio){o.audio.pause();} REC.playingIdx=-1; }
+  }
+
+  // ── events (scoped to this module) ──
+  document.addEventListener('click',function(e){
+    if(!document.body.classList.contains('mode-rechorder')) return;
+    const t=e.target; if(!t||!t.closest) return;
+
+    const clr=t.closest('.slot-clear');
+    if(clr){ e.stopPropagation(); clearSlot(+clr.dataset.i); return; }
+
+    const pb=t.closest('.rec-pb');
+    if(pb){ e.stopPropagation(); togglePlay(+pb.dataset.i); return; }
+
+    const add=t.closest('#rec-addslot');
+    if(add){ REC.slots.push(null); render(); return; }
+
+    const slot=t.closest('.rec-slot');
+    if(slot){
+      const i=+slot.dataset.i;
+      if(REC.state==='recording' && REC.armedIdx===i){ stopRecording(); return; }
+      if(REC.state==='idle' && !REC.slots[i]){ armSlot(i); return; }
+      return;
+    }
+  });
+  document.addEventListener('keydown',function(e){
+    if(!document.body.classList.contains('mode-rechorder')) return;
+    if(e.key!=='Enter'&&e.key!==' ') return;
+    const t=e.target;
+    if(t&&t.classList&&t.classList.contains('rec-slot')){ e.preventDefault(); t.click(); }
+  });
+
+  // metronome on/off toggle
+  const onBtn=$('rec-met-on'), offBtn=$('rec-met-off');
+  if(onBtn) onBtn.addEventListener('click',()=>{ REC.metOn=true; render(); });
+  if(offBtn) offBtn.addEventListener('click',()=>{ REC.metOn=false; render(); });
+
+  // keep box count in step with the time signature (only while not mid-record)
+  const sig=$('met-sig');
+  if(sig) sig.addEventListener('change',function(){
+    if(REC.state!=='idle') return;
+    resizeToSig();
+    if(document.body.classList.contains('mode-rechorder')) render();
+  });
+
+  // public hooks used by setMode
+  window.__capoRechorder={ render, onLeave };
+
+  // initial sizing/render so it's ready when first opened
+  resizeToSig();
+  render();
 })();
 </script>
 
