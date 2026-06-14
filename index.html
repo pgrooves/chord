@@ -200,6 +200,27 @@ body.mode-builder #libstatus{display:none !important}
 .bld-banner .chordseq{color:#6e6a5e; font-size:.95rem}
 @media (max-width:560px){.bld-banner .keyname{font-size:1.25rem}}
 
+/* ── chord-builder playback control (additive) ── */
+.bld-play-wrap{margin-left:auto; margin-right:auto; align-self:center; display:flex; flex-direction:column; align-items:center; gap:5px}
+.bld-play-cap{font-family:Poppins,sans-serif; font-weight:800; font-size:.6rem; letter-spacing:.18em; text-transform:uppercase; color:#1f8f7e; line-height:1}
+.bld-play{appearance:none; border:0; background:#000000; width:clamp(34px,8vw,46px); height:clamp(34px,8vw,46px); border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; -webkit-tap-highlight-color:transparent}
+.bld-play svg{width:42%; height:42%; display:block}
+.bld-play .ic-play{fill:#ffffff}
+.bld-play .ic-stop{fill:#ffffff; display:none}
+.bld-play.playing .ic-play{display:none}
+.bld-play.playing .ic-stop{display:block}
+.bld-play:focus-visible{outline:2px solid #1f8f7e; outline-offset:3px}
+@media (max-width:560px){.bld-play-wrap{margin-left:auto; margin-right:auto}}
+
+/* repeat dropdown sits beside the song-part selector */
+.bld-rep{display:inline-flex; align-items:center; gap:6px}
+.bld-rep-lab{font-size:.6rem; letter-spacing:.14em; text-transform:uppercase; color:#6e6a5e; font-weight:600}
+.bld-rep-select{appearance:none; background:#ffffff url(“data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' stroke='%239a968c' stroke-width='2' fill='none'/></svg>”) no-repeat right 10px center; border:1px solid #e3ddd0; border-radius:8px; color:#17150e; font:600 .78rem Inter,system-ui,sans-serif; letter-spacing:.04em; padding:8px 28px 8px 10px; cursor:pointer}
+.bld-rep-select:focus-visible{outline:2px solid #1f8f7e; outline-offset:2px}
+
+/* highlight the bar currently sounding during chord playback */
+.bld-slot.bld-active{border-color:#1f8f7e; box-shadow:0 0 0 2px #1f8f7e}
+
 .bld-section{margin:30px 0 6px}
 .bld-head{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
 .bld-head::after{content:””; flex:1; height:1px; background:#e3ddd0; order:5}
@@ -666,6 +687,7 @@ input[type=text]:focus-visible{outline:2px solid __ACC__; outline-offset:2px}
 .modtabs .modseg button[aria-pressed="true"]{background:__ACC__; color:__INK__}
 .modtabs .modseg button:focus-visible{outline:2px solid __ACC__; outline-offset:2px}
 .bld-banner .numerals{color:__ACC__; font-weight:600; letter-spacing:.14em}
+.bld-play-cap{color:__ACC__}
 .bld-part-select:focus-visible{outline:2px solid __ACC__; outline-offset:2px}
 .bld-arrows button:hover:not(:disabled){border-color:__ACC__; color:__ACC__}
 .bld-arrows button:focus-visible{outline:2px solid __ACC__; outline-offset:2px}
@@ -1118,12 +1140,15 @@ function lfApply(){
   var nextNoteTime=0, beatIndex=0, subIndex=0, timer=null;
   var polyNextTime=0, polyIndex=0;
   var LOOKAHEAD=0.025, SCHEDULE_AHEAD=0.1;
+  var lastDownbeatTime=0; // audioContext time of the most recently scheduled measure "1"
 
   function secsPerBeat(){ return 60.0/M.bpm; }
 
   function scheduleMainSub(time){
     // beatIndex/subIndex describe the current pulse
     var isDownbeat=(subIndex===0);
+    // remember the audioContext time of each measure "1" so other engines can align to it
+    if(isDownbeat && beatIndex===0) lastDownbeatTime=time;
     var accent=M.accents[beatIndex]||'normal';
     if(isDownbeat){
       if(!M.muted[beatIndex]) clickAt(time, M.pitch*(accent==='strong'?1.5:1), ACC_VOL[accent]);
@@ -1167,15 +1192,28 @@ function lfApply(){
     }
   }
 
-  function start(){
+  function start(alignTime){
     var c=ac(); if(!c) return;
     M.playing=true;
     beatIndex=0; subIndex=0; polyIndex=0;
-    nextNoteTime=c.currentTime+0.06;
+    // normally begin shortly after now; if an alignment time is supplied (e.g. the chord
+    // engine's next bar boundary), start the very first beat exactly there instead
+    var base=c.currentTime+0.06;
+    if(alignTime && alignTime>0){
+      // if the supplied boundary is too soon to schedule cleanly, step forward whole bars
+      var barLen=(60.0/M.bpm)*M.beats;
+      while(alignTime < base && barLen>0) alignTime += barLen;
+      nextNoteTime=alignTime;
+    }else{
+      nextNoteTime=base;
+    }
+    lastDownbeatTime=nextNoteTime; // first beat is a measure "1"
     polyNextTime=nextNoteTime;
     if(timer) clearInterval(timer);
     timer=setInterval(scheduler, LOOKAHEAD*1000);
     var b=$('met-play'); if(b){ b.classList.add('playing'); b.setAttribute('aria-pressed','true'); b.setAttribute('aria-label','Stop metronome'); }
+    // hand the chord engine the time of our first downbeat so it can sync if it wants
+    if(typeof window.__capoMetOnStart==='function'){ try{ window.__capoMetOnStart(nextNoteTime); }catch(e){} }
   }
   function stop(){
     M.playing=false;
@@ -1219,7 +1257,17 @@ function lfApply(){
     setBpm(M.bpm);
 
     var play=$('met-play');
-    if(play) play.addEventListener('click',function(){ if(M.playing) stop(); else start(); });
+    if(play) play.addEventListener('click',function(){
+      if(M.playing){ stop(); return; }
+      // if chord playback is already running, begin the metronome's first beat at the
+      // start of the next chord (its next bar boundary) so the two lock together
+      var cp=window.__capoChord;
+      if(cp && cp.isPlaying && cp.isPlaying() && cp.nextBarTime){
+        start(cp.nextBarTime());
+      }else{
+        start();
+      }
+    });
 
     var up=$('met-bpm-up'), dn=$('met-bpm-dn');
     if(up) up.addEventListener('click',function(){ setBpm(M.bpm+1); restartIfPlaying(); });
@@ -1300,6 +1348,29 @@ function lfApply(){
     });
   }
 
+  // ── live read-only accessor for other modules (additive) ──
+  // lets the chord builder read current tempo / beats-per-bar without touching met state
+  window.__capoMet={
+    bpm:function(){ return M.bpm; },
+    beatsPerBar:function(){ return M.beats; },   // derived from the selected time signature
+    secsPerBeat:function(){ return 60.0/M.bpm; },
+    secsPerBar:function(){ return (60.0/M.bpm)*M.beats; },
+    isPlaying:function(){ return !!M.playing; },
+    now:function(){ var c=ac(); return c?c.currentTime:0; },
+    // audioContext time of the next measure "1" (the downbeat the chord engine should hit)
+    nextDownbeatTime:function(){
+      var c=ac(); if(!c) return 0;
+      if(!M.playing) return c.currentTime;
+      var bar=(60.0/M.bpm)*M.beats;
+      var t=lastDownbeatTime;
+      // walk forward in whole bars until we're at or just past 'now'
+      while(t < c.currentTime + 0.02) t += bar;
+      return t;
+    },
+    // start the metronome with its first beat aligned to an external boundary time
+    startAligned:function(alignTime){ if(!M.playing) start(alignTime); }
+  };
+
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',wire);
   else wire();
 })();
@@ -1313,8 +1384,25 @@ function lfApply(){
   const SONG_PARTS=['Intro','Verse','Pre-Chorus','Chorus','Bridge','Solo','Refrain','Outro'];
 
   // builder state: list of parts; each part has a type and an array of chord slots (null = empty)
-  const BLD={ parts:[ {type:'Verse', slots:[null,null,null,null]} ] };
+  const BLD={ parts:[ {type:'Verse', repeat:1, slots:[null,null,null,null]} ] };
   let pickerTarget=null; // {partIndex, slotIndex}
+
+  // ── chord-playback (looper) state (additive) ──
+  // plays every filled slot in order — one chord per measure, strummed once on the downbeat —
+  // looping forever, with timing derived live from the metronome's tempo + time signature.
+  const BP={ playing:false, timer:null, seq:[], idx:0, activeEl:null,
+             barStart:0, barLen:0 };
+
+  // felt-beat count per time signature: the default number of chord boxes a part shows.
+  // (compound meters group in threes, so 6/8 = 2 felt beats, 9/8 = 3, 12/8 = 4; odd meters
+  // 5/4 = 5, 7/8 = 3.) playback strums once per measure regardless of this.
+  const SIG_GROUPS={
+    '2/4':[1,1], '3/4':[1,1,1], '4/4':[1,1,1,1], '5/4':[1,1,1,1,1],
+    '6/8':[3,3], '7/8':[2,2,3], '9/8':[3,3,3], '12/8':[3,3,3,3]
+  };
+  function currentSig(){ const s=document.getElementById('met-sig'); return s?s.value:'4/4'; }
+  function feltBeats(sig){ return (SIG_GROUPS[sig]||SIG_GROUPS['4/4']).length; }
+  function defaultSlots(){ const n=feltBeats(currentSig()); const a=[]; for(let i=0;i<n;i++) a.push(null); return a; }
 
   const $=id=>document.getElementById(id);
 
@@ -1359,6 +1447,13 @@ function lfApply(){
     return SONG_PARTS.map(p=>`<option value="${p}"${p===selected?' selected':''}>${p}</option>`).join('');
   }
 
+  // repeat-count choices for how many times a part's chord sequence plays
+  function repeatOptions(selected){
+    let html='';
+    for(let n=1;n<=16;n++) html+=`<option value="${n}"${n===selected?' selected':''}>${n}×</option>`;
+    return html;
+  }
+
   function slotHTML(part,pi,si){
     const T=TUNINGS[state.t];
     const shift=(PC[state.key]-PC[T.nativeKey]+12)%12;
@@ -1379,7 +1474,12 @@ function lfApply(){
     const T=TUNINGS[state.t];
     const bn=$('bld-banner');
     if(bn) bn.innerHTML=`<span class="keyname">${state.key} Major</span><span class="numerals">${T.label}</span>`
-      +`<span class="chordseq">build your progression — tap a slot to choose any voicing in this key &amp; tuning</span>`;
+      +`<span class="chordseq">build your progression — tap a slot to choose any voicing in this key &amp; tuning</span>`
+      +`<span class="bld-play-wrap"><span class="bld-play-cap">Chord Playback</span>`
+      +`<button type="button" class="bld-play${BP.playing?' playing':''}" id="bld-play" aria-label="Play chord progression" aria-pressed="${BP.playing?'true':'false'}">`
+      +`<svg class="ic-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5v14l12-7z"/></svg>`
+      +`<svg class="ic-stop" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>`
+      +`</button></span>`;
     const wrap=$('bld-parts');
     if(!wrap) return;
     let html='';
@@ -1387,6 +1487,7 @@ function lfApply(){
       html+=`<section class="bld-section">`
         +`<div class="bld-head">`
         +`<select class="bld-part-select" data-pi="${pi}" aria-label="Song part">${partOptions(part.type)}</select>`
+        +`<span class="bld-rep"><span class="bld-rep-lab">×</span><select class="bld-rep-select" data-pi="${pi}" aria-label="Repeat count for this part">${repeatOptions(part.repeat||1)}</select></span>`
         +`<span class="bld-arrows">`
         +`<button type="button" class="bld-up" data-pi="${pi}" ${pi===0?'disabled':''} aria-label="Move part up"><svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 6l5-5 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`
         +`<button type="button" class="bld-down" data-pi="${pi}" ${pi===BLD.parts.length-1?'disabled':''} aria-label="Move part down"><svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`
@@ -1411,6 +1512,12 @@ function lfApply(){
         if(opt) opt.textContent=lab;
       }
     });
+
+    // if a chord-playback loop is running, restore the current bar's highlight after re-render
+    if(typeof BP!=='undefined' && BP.playing && BP.seq.length){
+      const step=BP.seq[(BP.idx-1+BP.seq.length)%BP.seq.length];
+      if(step){ const el=wrap.querySelector(`.bld-slot[data-pi="${step.pi}"][data-si="${step.si}"]`); if(el){ el.classList.add('bld-active'); BP.activeEl=el; } }
+    }
   }
 
   // the degree this slot is scoped to (only the first 4 boxes map to the selected progression);
@@ -1564,22 +1671,146 @@ function lfApply(){
   // part-type dropdown change
   const partsWrap=$('bld-parts');
   if(partsWrap) partsWrap.addEventListener('change',function(e){
-    const sel=e.target&&e.target.closest?e.target.closest('.bld-part-select'):null;
-    if(!sel) return;
-    BLD.parts[+sel.dataset.pi].type=sel.value;
-    renderBuilder();
+    const tg=e.target&&e.target.closest?e.target:null;
+    const sel=tg&&tg.closest?tg.closest('.bld-part-select'):null;
+    if(sel){ BLD.parts[+sel.dataset.pi].type=sel.value; renderBuilder(); return; }
+    const rep=tg&&tg.closest?tg.closest('.bld-rep-select'):null;
+    if(rep){ BLD.parts[+rep.dataset.pi].repeat=Math.max(1,parseInt(rep.value,10)||1); return; }
   });
 
   // add part button
   const addPartBtn=$('bld-addpart');
   if(addPartBtn) addPartBtn.addEventListener('click',function(){
-    BLD.parts.push({type:'Verse', slots:[null,null,null,null]});
+    BLD.parts.push({type:'Verse', repeat:1, slots:defaultSlots()});
     renderBuilder();
+  });
+
+  // ── chord-playback engine (additive) ──
+
+  // flat play order: each filled slot becomes one bar; parts repeat per their count.
+  // empty slots are kept as silent rests so the song's bar structure stays intact.
+  function buildSequence(){
+    const seq=[];
+    BLD.parts.forEach((part,pi)=>{
+      const reps=Math.max(1,part.repeat||1);
+      for(let r=0;r<reps;r++){
+        part.slots.forEach((ch,si)=>{
+          seq.push({ pi, si, frets: ch?ch.frets.slice():null });
+        });
+      }
+    });
+    return seq;
+  }
+
+  // bar length in seconds from the live metronome (tempo × beats-per-bar from the time sig)
+  function barSecs(){
+    const met=window.__capoMet;
+    const s = (met&&met.secsPerBar) ? met.secsPerBar() : 2.0; // sensible fallback
+    return Math.max(0.12, s);
+  }
+  function audioNow(){
+    const met=window.__capoMet;
+    return (met&&met.now) ? met.now() : (performance.now()/1000);
+  }
+
+  function clearActiveBar(){
+    if(BP.activeEl){ BP.activeEl.classList.remove('bld-active'); BP.activeEl=null; }
+  }
+
+  function highlightBar(step){
+    clearActiveBar();
+    const wrap=$('bld-parts'); if(!wrap||!step) return;
+    const el=wrap.querySelector(`.bld-slot[data-pi="${step.pi}"][data-si="${step.si}"]`);
+    if(el){ el.classList.add('bld-active'); BP.activeEl=el; }
+  }
+
+  // fire one bar at BP.barStart (audioContext clock): strum the chord once on the measure's
+  // downbeat ("1"), then schedule the next bar. anchoring to the audio clock keeps playback
+  // locked to the metronome's grid. one strum per measure, regardless of time signature.
+  function playStep(){
+    if(!BP.playing) return;
+
+    const wait = (BP.barStart - audioNow())*1000;
+    if(wait > 18){
+      // not time yet — wake again just before the target instant
+      BP.timer=setTimeout(playStep, Math.min(wait-12, 60));
+      return;
+    }
+
+    // top of a new measure: lock this bar's length, then rebuild the sequence so chords
+    // added/removed mid-playback take effect in real time; stop if all were removed
+    BP.barLen=barSecs();
+    BP.seq=buildSequence();
+    if(!BP.seq.length || !BP.seq.some(s=>s.frets)){ stopPlayback(); return; }
+    if(BP.idx>=BP.seq.length) BP.idx=0;            // ── loop back to the start ──
+
+    const step=BP.seq[BP.idx];
+    highlightBar(step);
+    if(step && step.frets){
+      const wrap=$('bld-parts');
+      const el=wrap?wrap.querySelector(`.bld-slot[data-pi="${step.pi}"][data-si="${step.si}"]`):null;
+      // strum once on the downbeat, identical to tapping the chord
+      try{ strumChord(el||document.createElement('div'), step.frets); }catch(e){}
+    }
+
+    // advance one whole measure (re-read tempo/time-signature each bar so changes take
+    // effect on the very next bar)
+    BP.idx++;
+    BP.barStart += BP.barLen;
+    BP.timer=setTimeout(playStep, Math.min(Math.max((BP.barStart-audioNow())*1000-12,0),60));
+  }
+
+  function startPlayback(){
+    BP.seq=buildSequence();
+    if(!BP.seq.some(s=>s.frets)){ return; }        // nothing to play — no filled slots
+    BP.playing=true; BP.idx=0;
+    BP.barLen=barSecs();
+    const met=window.__capoMet;
+    // if the metronome is already running, begin on the "1" of the NEXT measure;
+    // otherwise start almost immediately
+    if(met && met.isPlaying && met.isPlaying() && met.nextDownbeatTime){
+      BP.barStart = met.nextDownbeatTime();
+    }else{
+      BP.barStart = audioNow()+0.06;
+    }
+    const btn=$('bld-play');
+    if(btn){ btn.classList.add('playing'); btn.setAttribute('aria-pressed','true'); btn.setAttribute('aria-label','Stop chord progression'); }
+    playStep();
+  }
+
+  function stopPlayback(){
+    BP.playing=false;
+    if(BP.timer){ clearTimeout(BP.timer); BP.timer=null; }
+    clearActiveBar();
+    const btn=$('bld-play');
+    if(btn){ btn.classList.remove('playing'); btn.setAttribute('aria-pressed','false'); btn.setAttribute('aria-label','Play chord progression'); }
+  }
+
+  function togglePlayback(){ if(BP.playing) stopPlayback(); else startPlayback(); }
+
+  // expose chord-playback timing so the metronome can align its own start to our next measure
+  window.__capoChord={
+    isPlaying:function(){ return !!BP.playing; },
+    // audioContext time of the next measure boundary (the start of the next chord)
+    nextBarTime:function(){
+      if(!BP.playing) return BP.barStart;
+      let t=BP.barStart, bl=BP.barLen||barSecs();
+      while(t < audioNow()+0.02) t += bl;
+      return t;
+    }
+  };
+
+  // delegated click for the playback button (banner is re-rendered, so bind on a stable parent)
+  const bannerWrap=$('bld-banner');
+  if(bannerWrap) bannerWrap.addEventListener('click',function(e){
+    const b=e.target&&e.target.closest?e.target.closest('#bld-play'):null;
+    if(b){ e.stopPropagation(); togglePlayback(); }
   });
 
   // ── module switching ──
   function setMode(mode){
     const isBuilder=(mode==='builder');
+    if(!isBuilder && typeof stopPlayback==='function') stopPlayback();
     document.body.classList.toggle('mode-builder',isBuilder);
     const rb=$('mod-reader'), bb=$('mod-builder');
     if(rb) rb.setAttribute('aria-pressed', String(!isBuilder));
@@ -1589,6 +1820,24 @@ function lfApply(){
   const rb=$('mod-reader'), bb=$('mod-builder');
   if(rb) rb.addEventListener('click',()=>setMode('reader'));
   if(bb) bb.addEventListener('click',()=>setMode('builder'));
+
+  // resize every part's default chord-box count to match a time signature, without ever
+  // deleting a chord: grow by padding empty boxes, shrink only by trimming EMPTY trailing boxes
+  function resizePartsToSig(){
+    const want=feltBeats(currentSig());
+    BLD.parts.forEach(part=>{
+      const s=part.slots;
+      while(s.length<want) s.push(null);
+      while(s.length>want && s[s.length-1]==null) s.pop();
+    });
+  }
+
+  // when the time signature changes, reflect the new felt-beat count in the builder layout
+  const sig=$('met-sig');
+  if(sig) sig.addEventListener('change',function(){
+    resizePartsToSig();
+    if(document.body.classList.contains('mode-builder')) renderBuilder();
+  });
 
   // keep builder in sync when tuning / key / filters change while in builder mode.
   // diagrams store absolute frets per their selected key at pick-time, so on key/tuning
@@ -1612,6 +1861,7 @@ function lfApply(){
   });
 
   // initial render so it's ready when first switched to
+  resizePartsToSig();
   renderBuilder();
 })();
 </script>
