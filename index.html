@@ -2200,6 +2200,9 @@ function lfApply(){
     if(cb) cb.setAttribute('aria-pressed', String(isRechorder));
     if(isBuilder) renderBuilder();
     if(isRechorder && window.__capoRechorder && window.__capoRechorder.render) window.__capoRechorder.render();
+    // re-render the reader's diagrams on return so their colors always match the
+    // current theme (fixes stale fret-dot color after toggling theme in another module)
+    if(isReader){ try{ if(typeof render==='function') render(); }catch(e){} }
   }
   const rb=$('mod-reader'), bb=$('mod-builder'), cb=$('mod-rechorder');
   if(rb) rb.addEventListener('click',()=>setMode('reader'));
