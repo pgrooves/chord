@@ -148,8 +148,28 @@ input[type=text]:focus-visible{outline:2px solid #1f8f7e; outline-offset:2px}
 .controls.collapsed .ctl-toggle svg{transform:rotate(180deg)}
 .controls.collapsed .ctl-body{display:none}
 .controls.collapsed{padding:12px 0 30px}
-.ctl-collapsed-label{display:none; font:600 .74rem Inter,system-ui,sans-serif; letter-spacing:.16em; text-transform:uppercase; color:#6e6a5e; line-height:1.2; text-align:center; padding:2px 0 10px}
-.controls.collapsed .ctl-collapsed-label{display:block}
+
+/* Expanded (INTERNAL SCROLL variant): the whole section stays sticky and is capped to
+the screen height. The header row (tempo/label/play) stays fixed at the top, the body
+of the settings scrolls INTERNALLY, and the chevron stays pinned at the bottom of the
+section — always visible no matter how many sub-settings are expanded. */
+.controls:not(.collapsed){
+display:flex; flex-direction:column;
+max-height:100vh; max-height:100dvh; /* JS refines this to the space actually available */
+padding-bottom:38px;            /* room for the pinned chevron */
+overflow:hidden;                /* clip; inner body handles the scrolling */
+}
+.controls:not(.collapsed) .met-bar{flex:0 0 auto}
+.controls:not(.collapsed) .ctl-body{
+flex:1 1 auto;
+overflow-y:auto;
+-webkit-overflow-scrolling:touch;
+overscroll-behavior:contain;    /* don’t chain scroll to the page */
+padding-bottom:6px;
+}
+/* chevron pinned at the bottom of the capped section, always in view */
+.controls:not(.collapsed) .ctl-toggle{position:absolute; bottom:6px; left:50%; transform:translateX(-50%); top:auto}
+.ctl-collapsed-label{display:none}
 @media (prefers-reduced-motion:reduce){.ctl-toggle svg{transition:none}}
 
 /* ── scroll-to-top button ── */
@@ -239,6 +259,78 @@ body.mode-builder #libstatus{display:none !important}
 .bld-cc .cc-meta{font-size:.64rem; color:#6e6a5e; margin-top:4px; text-align:center}
 .bld-cc .cc-meta b{color:#17150e; font-weight:600}
 .bld-picker-empty{padding:30px 20px 40px; color:#6e6a5e; font-size:.9rem; text-align:center}
+
+/* ── metronome bar (additive) ── */
+.met-bar{display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:14px; padding:0 0 4px}
+.controls.collapsed .met-bar{padding-bottom:0}
+/* hide the old collapsed-only label; the met-bar label is always visible */
+.met-tempo{justify-self:start; display:flex; flex-direction:column; align-items:center; gap:3px}
+.met-tempo-row{display:flex; align-items:center; gap:8px}
+.met-tt{display:flex; flex-direction:column; gap:0; align-items:center}
+.met-tt label{font-size:.52rem; letter-spacing:.16em; text-transform:uppercase; color:#6e6a5e; font-weight:600; line-height:1}
+.met-tt .met-tval{font-family:Poppins,sans-serif; font-weight:800; letter-spacing:.04em; text-transform:uppercase; line-height:1; color:#17150e; display:flex; align-items:baseline; gap:4px}
+.met-tt .met-tval .num{font-family:Poppins,sans-serif; font-weight:800; letter-spacing:.04em; color:#17150e; font-size:clamp(1rem,3vw,1.35rem); width:2.3em; text-align:center; border:1px solid transparent; border-radius:6px; background:transparent; padding:0 2px; -moz-appearance:textfield}
+.met-tt .met-tval .num::-webkit-outer-spin-button,.met-tt .met-tval .num::-webkit-inner-spin-button{-webkit-appearance:none; margin:0}
+.met-tt .met-tval .num:hover{border-color:#e3ddd0}
+.met-tt .met-tval .num:focus{outline:none; border-color:#1f8f7e; background:#ffffff}
+.met-tt .met-tval .unit{font-size:.56rem; font-weight:600; letter-spacing:.14em; color:#6e6a5e}
+.met-step{display:flex; flex-direction:column; gap:2px}
+.met-step button{appearance:none; border:1px solid #e3ddd0; background:#ffffff; color:#6e6a5e; width:22px; height:14px; line-height:1; border-radius:5px; cursor:pointer; font-size:.66rem; display:flex; align-items:center; justify-content:center; padding:0}
+.met-step button:hover{border-color:#1f8f7e; color:#1f8f7e}
+.met-step button:focus-visible{outline:2px solid #1f8f7e; outline-offset:2px}
+.met-sig{display:flex; align-items:center; gap:7px}
+.met-sig label{font-size:.52rem; letter-spacing:.16em; text-transform:uppercase; color:#6e6a5e; font-weight:600}
+.met-sig select{appearance:none; background:#ffffff url(“data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='7'><path d='M1 1l4 4 4-4' stroke='%239a968c' stroke-width='2' fill='none'/></svg>”) no-repeat right 7px center; border:1px solid #e3ddd0; border-radius:7px; color:#17150e; font-family:Poppins,sans-serif; font-weight:800; letter-spacing:.04em; font-size:clamp(.8rem,2.4vw,1rem); padding:1px 22px 1px 8px; cursor:pointer; line-height:1.05}
+.met-sig select:focus-visible{outline:2px solid #1f8f7e; outline-offset:2px}
+.met-label{justify-self:center; font-family:Poppins,sans-serif; font-weight:600; font-size:.74rem; letter-spacing:.16em; text-transform:uppercase; color:#6e6a5e; text-align:center; line-height:1.2}
+.met-play-wrap{justify-self:end; display:flex; flex-direction:column; align-items:center; gap:5px}
+.met-play-cap{font-family:Poppins,sans-serif; font-weight:800; font-size:.6rem; letter-spacing:.18em; text-transform:uppercase; color:#1f8f7e; line-height:1}
+.met-play-row{display:flex; align-items:center; gap:8px}
+.met-play{appearance:none; border:0; background:#000000; width:clamp(34px,8vw,46px); height:clamp(34px,8vw,46px); border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; -webkit-tap-highlight-color:transparent}
+.met-play svg{width:42%; height:42%; display:block; fill:#000000}
+.met-play .ic-play{fill:#ffffff}
+.met-play .ic-stop{fill:#ffffff; display:none}
+.met-play.playing .ic-play{display:none}
+.met-play.playing .ic-stop{display:block}
+.met-play:focus-visible{outline:2px solid #1f8f7e; outline-offset:3px}
+.met-tap{appearance:none; border:2px solid #000000; background:#ffffff; width:clamp(34px,8vw,46px); height:clamp(34px,8vw,46px); border-radius:10px; cursor:pointer; font-family:Poppins,sans-serif; font-weight:800; font-size:.66rem; letter-spacing:.1em; text-transform:uppercase; color:#17150e; padding:0; -webkit-tap-highlight-color:transparent; transition:background .1s,color .1s}
+.met-tap:active,.met-tap.flash{background:#000000; color:#ffffff}
+.met-tap:focus-visible{outline:2px solid #1f8f7e; outline-offset:3px}
+
+/* ── metronome settings (collapsible, additive) ── */
+details.metset{margin:0 0 14px; border:1px solid #e3ddd0; border-radius:12px; background:#ffffff}
+details.metset>summary{cursor:pointer; padding:12px 16px; font:600 .78rem Inter,system-ui,sans-serif; letter-spacing:.16em; text-transform:uppercase; color:#6e6a5e; list-style:none; display:flex; align-items:center; gap:10px}
+details.metset>summary::-webkit-details-marker{display:none}
+details.metset>summary::after{content:”+”; margin-left:auto; font-size:1rem; color:#1f8f7e}
+details.metset[open]>summary::after{content:”\2212”}
+.metset-body{padding:0 16px 16px; display:flex; flex-direction:column; gap:18px}
+.metset-block{display:flex; flex-direction:column; gap:8px}
+.metset-block>.mb-head{font-size:.66rem; letter-spacing:.14em; text-transform:uppercase; color:#6e6a5e; font-weight:600; display:flex; align-items:baseline; gap:8px}
+.metset-block>.mb-head small{text-transform:none; letter-spacing:0; font-weight:400; font-size:.7rem; opacity:.7}
+.met-beatgrid{display:flex; flex-wrap:wrap; gap:8px}
+.met-beat{display:flex; flex-direction:column; align-items:center; gap:5px}
+.met-beat .bnum{font:600 .66rem Inter,system-ui,sans-serif; color:#6e6a5e}
+.met-beat .accbtn{appearance:none; border:1px solid #e3ddd0; background:#faf8f2; color:#6e6a5e; width:40px; height:40px; border-radius:10px; cursor:pointer; font:700 .64rem Inter,system-ui,sans-serif; letter-spacing:.04em; display:flex; align-items:center; justify-content:center; padding:0; transition:background .15s,border-color .15s,color .15s}
+.met-beat .accbtn[data-acc=“strong”]{background:#1f8f7e; border-color:#1f8f7e; color:#ffffff}
+.met-beat .accbtn[data-acc=“normal”]{background:#ffffff; border-color:#cfcabd; color:#17150e}
+.met-beat .accbtn[data-acc=“soft”]{background:#faf8f2; border-color:#e3ddd0; color:#9a968c}
+.met-beat .mutebtn{appearance:none; border:1px solid #e3ddd0; background:#ffffff; color:#6e6a5e; border-radius:7px; cursor:pointer; font:600 .58rem Inter,system-ui,sans-serif; letter-spacing:.08em; text-transform:uppercase; padding:4px 0; width:40px}
+.met-beat .mutebtn.on{background:#17150e; border-color:#17150e; color:#ffffff}
+.met-beat .mutebtn:focus-visible,.met-beat .accbtn:focus-visible{outline:2px solid #1f8f7e; outline-offset:2px}
+.met-segrow{display:flex; flex-wrap:wrap; gap:8px}
+.met-segrow button{appearance:none; border:1px solid #e3ddd0; background:#faf8f2; color:#6e6a5e; font:600 .76rem Inter,system-ui,sans-serif; border-radius:999px; padding:7px 14px; cursor:pointer; transition:all .2s}
+.met-segrow button.on{background:#1f8f7e; border-color:#1f8f7e; color:#ffffff}
+.met-segrow button:focus-visible{outline:2px solid #1f8f7e; outline-offset:2px}
+.met-poly{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.met-poly .met-segrow{flex:1 1 auto}
+.met-pitchrow{display:flex; align-items:center; gap:12px}
+.met-pitchrow input[type=range]{flex:1 1 auto; accent-color:#1f8f7e}
+.met-pitchrow .pval{font:600 .74rem Inter,system-ui,sans-serif; color:#17150e; min-width:64px; text-align:right}
+@media (max-width:560px){
+.met-bar{gap:8px}
+.met-beat .accbtn,.met-beat .mutebtn{width:34px}
+.met-beat .accbtn{height:34px}
+}
 </style>
 
 </head>
@@ -259,9 +351,83 @@ body.mode-builder #libstatus{display:none !important}
   </header>
 
   <div class="controls collapsed">
-    <button type="button" class="ctl-toggle" id="ctl-toggle" aria-expanded="false" aria-label="Expand settings"><svg width="12" height="8" viewBox="0 0 12 8" fill="none" aria-hidden="true"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <span class="ctl-collapsed-label">Settings &amp; filters</span>
+    <div class="met-bar" id="met-bar">
+      <div class="met-tempo">
+        <div class="met-tempo-row">
+          <div class="met-tt">
+            <label for="met-bpm-val">Tempo</label>
+            <div class="met-tval"><input type="text" class="num" id="met-bpm-val" value="100" inputmode="numeric" pattern="[0-9]*" aria-label="Tempo in beats per minute" maxlength="3"><span class="unit">BPM</span></div>
+          </div>
+          <div class="met-step">
+            <button type="button" id="met-bpm-up" aria-label="Tempo up">&plus;</button>
+            <button type="button" id="met-bpm-dn" aria-label="Tempo down">&minus;</button>
+          </div>
+        </div>
+        <div class="met-sig">
+          <label for="met-sig">Time</label>
+          <select id="met-sig" aria-label="Time signature">
+            <option value="2/4">2/4</option>
+            <option value="3/4">3/4</option>
+            <option value="4/4" selected>4/4</option>
+            <option value="5/4">5/4</option>
+            <option value="6/8">6/8</option>
+            <option value="7/8">7/8</option>
+            <option value="9/8">9/8</option>
+            <option value="12/8">12/8</option>
+          </select>
+        </div>
+      </div>
+      <span class="met-label">Settings &amp; filters</span>
+      <div class="met-play-wrap">
+        <span class="met-play-cap">Click Play/Pause</span>
+        <div class="met-play-row">
+          <button type="button" class="met-play" id="met-play" aria-label="Play metronome" aria-pressed="false">
+            <svg class="ic-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5v14l12-7z"/></svg>
+            <svg class="ic-stop" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
+          </button>
+          <button type="button" class="met-tap" id="met-tap" aria-label="Tap tempo">Tap</button>
+        </div>
+      </div>
+    </div>
     <div class="ctl-body" id="ctl-body">
+    <details class="metset">
+    <summary>Metronome settings</summary>
+    <div class="metset-body">
+      <div class="metset-block">
+        <div class="mb-head"><span>Beat accents</span><small>tap a beat to cycle strong · normal · soft</small></div>
+        <div class="met-beatgrid" id="met-accents"></div>
+      </div>
+      <div class="metset-block">
+        <div class="mb-head"><span>Sound pitch</span><small>frequency of the click</small></div>
+        <div class="met-pitchrow">
+          <input type="range" id="met-pitch" min="220" max="2000" step="10" value="1000" aria-label="Metronome pitch">
+          <span class="pval" id="met-pitch-val">1000 Hz</span>
+        </div>
+      </div>
+      <div class="metset-block">
+        <div class="mb-head"><span>Subdivision</span><small>extra clicks between beats</small></div>
+        <div class="met-segrow" id="met-subdiv">
+          <button type="button" data-sub="1" class="on">Off</button>
+          <button type="button" data-sub="2">Eighths</button>
+          <button type="button" data-sub="3">Triplets</button>
+          <button type="button" data-sub="4">Sixteenths</button>
+          <button type="button" data-sub="5">Quintuplets</button>
+          <button type="button" data-sub="7">Septuplets</button>
+        </div>
+      </div>
+      <div class="metset-block">
+        <div class="mb-head"><span>Polyrhythm</span><small>second layer played against the beat</small></div>
+        <div class="met-segrow" id="met-poly">
+          <button type="button" data-poly="0" class="on">Off</button>
+          <button type="button" data-poly="3:2">3:2</button>
+          <button type="button" data-poly="4:3">4:3</button>
+          <button type="button" data-poly="5:4">5:4</button>
+          <button type="button" data-poly="2:3">2:3</button>
+        </div>
+      </div>
+    </div>
+  </details>
     <div class="field field-tuning">
         <label id="lab-tuning">Tuning</label>
         <div class="seg" role="group" aria-labelledby="lab-tuning">
@@ -326,6 +492,7 @@ body.mode-builder #libstatus{display:none !important}
     </div>
   </details>
     </div>
+    <button type="button" class="ctl-toggle" id="ctl-toggle" aria-expanded="false" aria-label="Expand settings"><svg width="12" height="8" viewBox="0 0 12 8" fill="none" aria-hidden="true"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   </div>
 
   <div class="prog-banner" id="banner"></div>
@@ -511,7 +678,16 @@ input[type=text]:focus-visible{outline:2px solid __ACC__; outline-offset:2px}
 .bld-picker-top .pt-close:hover{border-color:__ACC__; color:__ACC__}
 .bld-cc.from-prog{border-color:__ACC__; box-shadow:0 0 0 1px __ACC__}
 .bld-cc .cc-tag{position:absolute; top:-1px; left:-1px; background:__ACC__; color:__INK__; font:700 .54rem Inter,system-ui,sans-serif; letter-spacing:.1em; text-transform:uppercase; padding:3px 7px; border-radius:12px 0 8px 0}
-.bld-cc:hover{border-color:__ACC__; box-shadow:0 0 0 2px __ACC__}`;
+.bld-cc:hover{border-color:__ACC__; box-shadow:0 0 0 2px __ACC__}
+.met-play-cap{color:__ACC__}
+.met-step button:hover{border-color:__ACC__; color:__ACC__}
+.met-sig select:focus-visible,.met-bpm-focus{outline:2px solid __ACC__; outline-offset:2px}
+.met-beat .accbtn[data-acc="strong"]{background:__ACC__; border-color:__ACC__; color:__INK__}
+.met-segrow button.on{background:__ACC__; border-color:__ACC__; color:__INK__}
+.met-segrow button:focus-visible{outline:2px solid __ACC__; outline-offset:2px}
+.met-pitchrow input[type=range]{accent-color:__ACC__}
+details.metset>summary::after{color:__ACC__}
+details.metset[open]>summary::after{color:__ACC__}`;
   document.getElementById('accent-css').textContent=tpl.split('__ACC__').join(c).split('__INK__').join(ink);
 }
 
@@ -820,16 +996,312 @@ function lfApply(){
 /* ── sticky collapse toggle (additive) ── */
 (function(){
   const t=document.getElementById('ctl-toggle');
+  const controlsEl=document.querySelector('.controls');
+  const ctlBody=document.getElementById('ctl-body');
+
+  // INTERNAL SCROLL variant: the section is always sticky and capped to the space that's
+  // actually visible (from the section's top down to the bottom of the screen), so the
+  // chevron is always pinned within view and the body scrolls internally.
+  function updateExpandedCap(){
+    if(!controlsEl) return;
+    if(controlsEl.classList.contains('collapsed')){ controlsEl.style.maxHeight=''; return; }
+    var vh=window.innerHeight||document.documentElement.clientHeight;
+    var topOffset=Math.max(0, controlsEl.getBoundingClientRect().top); // 0 once pinned at top
+    controlsEl.style.maxHeight=(vh-topOffset)+'px';
+  }
+  function syncCtlOverflow(){ updateExpandedCap(); } // keep name other modules may call
+  window.__syncCtlOverflow=syncCtlOverflow;
+  window.addEventListener('resize', updateExpandedCap);
+  window.addEventListener('scroll', updateExpandedCap, {passive:true});
+
+  // When a sub-section opens, scroll the INTERNAL body so the tapped header stays in view
+  // (its revealed contents below it). The chevron stays pinned, so it never disappears.
+  if(controlsEl){
+    controlsEl.querySelectorAll('details').forEach(function(d){
+      d.addEventListener('toggle', function(){
+        if(!d.open || !ctlBody) return;
+        var summary=d.querySelector('summary')||d;
+        var doScroll=function(){
+          try{
+            var sRect=summary.getBoundingClientRect();
+            var bRect=ctlBody.getBoundingClientRect();
+            // move the summary near the top of the scrollable body
+            ctlBody.scrollTo({top: ctlBody.scrollTop + (sRect.top - bRect.top) - 8, behavior:'smooth'});
+          }catch(e){ try{ summary.scrollIntoView({block:'nearest'}); }catch(_){} }
+        };
+        if(window.requestAnimationFrame){
+          requestAnimationFrame(function(){ requestAnimationFrame(doScroll); });
+        } else { setTimeout(doScroll,30); }
+      });
+    });
+  }
   if(!t||!t.addEventListener) return;
   t.addEventListener('click',()=>{
     if(typeof document.querySelector!=='function') return;
     const c=document.querySelector('.controls');
     if(!c) return;
+    const wasExpanded=!c.classList.contains('collapsed');
     c.classList.toggle('collapsed');
     const col=c.classList.contains('collapsed');
     t.setAttribute('aria-expanded', col?'false':'true');
     t.setAttribute('aria-label', col?'Expand settings':'Collapse settings');
+    syncCtlOverflow();
+    // When collapsing after scrolling down, bring the user back up to the settings
+    if(wasExpanded && col){
+      var doScroll=function(){
+        try{
+          var top=c.getBoundingClientRect().top + (window.pageYOffset||window.scrollY||0);
+          window.scrollTo({top:Math.max(0, top-8), behavior:'smooth'});
+        }catch(e){ try{ window.scrollTo(0,0); }catch(_){} }
+      };
+      // wait for the collapse reflow to finish before measuring/scrolling
+      if(window.requestAnimationFrame){
+        requestAnimationFrame(function(){ requestAnimationFrame(doScroll); });
+      } else { setTimeout(doScroll,40); }
+    }
   });
+})();
+</script>
+
+<script>
+/* ── sine-wave metronome (additive) ── */
+(function(){
+  if(typeof document==='undefined') return;
+  var $=function(id){return document.getElementById(id);};
+
+  // shared audio context (reuse the page's if present)
+  function ac(){
+    if(!window.__capoMetCtx){
+      if(window.AudioContext||window.webkitAudioContext)
+        window.__capoMetCtx=new (window.AudioContext||window.webkitAudioContext)();
+    }
+    var c=window.__capoMetCtx;
+    if(c&&c.state==='suspended'){ try{c.resume();}catch(e){} }
+    return c;
+  }
+
+  // ── state ──
+  var M={
+    bpm:100, beats:4, sub:1, pitch:1000, playing:false,
+    accents:[], muted:[], poly:0,            // poly: 0 off, else [a,b] (a:b)
+    BPM_MIN:30, BPM_MAX:300
+  };
+  var SIG_DIV={'2/4':2,'3/4':3,'4/4':4,'5/4':5,'6/8':6,'7/8':7,'9/8':9,'12/8':12};
+
+  function defaultAccents(n){
+    var a=[]; for(var i=0;i<n;i++) a.push(i===0?'strong':'normal'); return a;
+  }
+  function syncBeatsFromSig(){
+    var sel=$('met-sig'); var n=SIG_DIV[sel?sel.value:'4/4']||4;
+    M.beats=n;
+    // preserve existing settings where lengths line up, otherwise rebuild
+    if(M.accents.length!==n) M.accents=defaultAccents(n);
+    if(M.muted.length!==n){ M.muted=[]; for(var i=0;i<n;i++) M.muted.push(false); }
+  }
+
+  // ── click synthesis (sine, matches tuner/strum style) ──
+  function clickAt(when,freq,vol){
+    var c=ac(); if(!c) return;
+    var o=c.createOscillator(); o.type='sine'; o.frequency.value=freq;
+    var g=c.createGain();
+    var dur=0.045;
+    g.gain.setValueAtTime(0.0001,when);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.0001,vol),when+0.004);
+    g.gain.exponentialRampToValueAtTime(0.0001,when+dur);
+    o.connect(g); g.connect(c.destination);
+    o.start(when); o.stop(when+dur+0.02);
+  }
+
+  var ACC_VOL={strong:0.6,normal:0.34,soft:0.16};
+
+  // ── scheduler (lookahead) ──
+  var nextNoteTime=0, beatIndex=0, subIndex=0, timer=null;
+  var polyNextTime=0, polyIndex=0;
+  var LOOKAHEAD=0.025, SCHEDULE_AHEAD=0.1;
+
+  function secsPerBeat(){ return 60.0/M.bpm; }
+
+  function scheduleMainSub(time){
+    // beatIndex/subIndex describe the current pulse
+    var isDownbeat=(subIndex===0);
+    var accent=M.accents[beatIndex]||'normal';
+    if(isDownbeat){
+      if(!M.muted[beatIndex]) clickAt(time, M.pitch*(accent==='strong'?1.5:1), ACC_VOL[accent]);
+    }else{
+      // subdivision click: quieter, slightly higher, also muted if its beat is muted
+      if(!M.muted[beatIndex]) clickAt(time, M.pitch*1.0, 0.12);
+    }
+  }
+  function advanceMainSub(){
+    var spb=secsPerBeat();
+    nextNoteTime += spb / M.sub;
+    subIndex++;
+    if(subIndex>=M.sub){ subIndex=0; beatIndex=(beatIndex+1)%M.beats; }
+  }
+
+  // polyrhythm: 'a:b' => a notes spread across b beats, looping every b beats
+  function polyParts(){ if(!M.poly) return null; var p=(''+M.poly).split(':'); return [+p[0],+p[1]]; }
+  function schedulePoly(time){
+    clickAt(time, M.pitch*0.6, 0.3); // distinct lower voice
+  }
+  function advancePoly(){
+    var pp=polyParts(); if(!pp) return;
+    var spb=secsPerBeat();
+    var spanSecs=spb*pp[1];               // total span for the cycle
+    polyNextTime += spanSecs/pp[0];       // even spacing of a notes across b beats
+    polyIndex=(polyIndex+1)%pp[0];
+  }
+
+  function scheduler(){
+    var c=ac(); if(!c) return;
+    while(nextNoteTime < c.currentTime + SCHEDULE_AHEAD){
+      scheduleMainSub(nextNoteTime);
+      advanceMainSub();
+    }
+    var pp=polyParts();
+    if(pp){
+      while(polyNextTime < c.currentTime + SCHEDULE_AHEAD){
+        schedulePoly(polyNextTime);
+        advancePoly();
+      }
+    }
+  }
+
+  function start(){
+    var c=ac(); if(!c) return;
+    M.playing=true;
+    beatIndex=0; subIndex=0; polyIndex=0;
+    nextNoteTime=c.currentTime+0.06;
+    polyNextTime=nextNoteTime;
+    if(timer) clearInterval(timer);
+    timer=setInterval(scheduler, LOOKAHEAD*1000);
+    var b=$('met-play'); if(b){ b.classList.add('playing'); b.setAttribute('aria-pressed','true'); b.setAttribute('aria-label','Stop metronome'); }
+  }
+  function stop(){
+    M.playing=false;
+    if(timer){ clearInterval(timer); timer=null; }
+    var b=$('met-play'); if(b){ b.classList.remove('playing'); b.setAttribute('aria-pressed','false'); b.setAttribute('aria-label','Play metronome'); }
+  }
+  function restartIfPlaying(){ if(M.playing){ stop(); start(); } }
+
+  // ── UI rendering ──
+  function renderAccents(){
+    var wrap=$('met-accents'); if(!wrap) return;
+    var html='';
+    for(var i=0;i<M.beats;i++){
+      var acc=M.accents[i]||'normal';
+      var lab=acc==='strong'?'STR':acc==='soft'?'soft':'norm';
+      html+='<div class="met-beat">'
+        + '<span class="bnum">'+(i+1)+'</span>'
+        + '<button type="button" class="accbtn" data-i="'+i+'" data-acc="'+acc+'" aria-label="Beat '+(i+1)+' accent">'+lab+'</button>'
+        + '<button type="button" class="mutebtn'+(M.muted[i]?' on':'')+'" data-i="'+i+'" aria-pressed="'+(M.muted[i]?'true':'false')+'">'+(M.muted[i]?'Muted':'Mute')+'</button>'
+        + '</div>';
+    }
+    wrap.innerHTML=html;
+  }
+  function setBpm(v,skipInput){
+    v=Math.max(M.BPM_MIN,Math.min(M.BPM_MAX,Math.round(v)));
+    M.bpm=v;
+    if(!skipInput){ var el=$('met-bpm-val'); if(el) el.value=v; }
+  }
+  function commitBpmInput(){
+    var el=$('met-bpm-val'); if(!el) return;
+    var n=parseInt((el.value||'').replace(/[^0-9]/g,''),10);
+    if(isNaN(n)) n=M.bpm;                 // revert to last good value if blank/invalid
+    setBpm(n);                            // clamps and rewrites the field
+    restartIfPlaying();
+  }
+
+  // ── wiring ──
+  function wire(){
+    syncBeatsFromSig();
+    renderAccents();
+    setBpm(M.bpm);
+
+    var play=$('met-play');
+    if(play) play.addEventListener('click',function(){ if(M.playing) stop(); else start(); });
+
+    var up=$('met-bpm-up'), dn=$('met-bpm-dn');
+    if(up) up.addEventListener('click',function(){ setBpm(M.bpm+1); restartIfPlaying(); });
+    if(dn) dn.addEventListener('click',function(){ setBpm(M.bpm-1); restartIfPlaying(); });
+
+    // keyboard-editable tempo
+    var bpmInput=$('met-bpm-val');
+    if(bpmInput){
+      // keep only digits while typing; don't fight the user mid-edit
+      bpmInput.addEventListener('input',function(){
+        var cleaned=bpmInput.value.replace(/[^0-9]/g,'').slice(0,3);
+        if(cleaned!==bpmInput.value) bpmInput.value=cleaned;
+        var n=parseInt(cleaned,10);
+        if(!isNaN(n)&&n>=M.BPM_MIN&&n<=M.BPM_MAX){ setBpm(n,true); restartIfPlaying(); }
+      });
+      bpmInput.addEventListener('keydown',function(e){
+        if(e.key==='Enter'){ e.preventDefault(); commitBpmInput(); bpmInput.blur(); }
+        else if(e.key==='ArrowUp'){ e.preventDefault(); setBpm(M.bpm+1); restartIfPlaying(); }
+        else if(e.key==='ArrowDown'){ e.preventDefault(); setBpm(M.bpm-1); restartIfPlaying(); }
+      });
+      bpmInput.addEventListener('blur',commitBpmInput);
+      bpmInput.addEventListener('focus',function(){ bpmInput.select(); });
+    }
+
+    var sig=$('met-sig');
+    if(sig) sig.addEventListener('change',function(){ syncBeatsFromSig(); renderAccents(); restartIfPlaying(); });
+
+    var pitch=$('met-pitch'), pv=$('met-pitch-val');
+    if(pitch) pitch.addEventListener('input',function(){ M.pitch=+pitch.value; if(pv) pv.textContent=pitch.value+' Hz'; });
+
+    // accent + mute (event delegation)
+    var accWrap=$('met-accents');
+    if(accWrap) accWrap.addEventListener('click',function(e){
+      var t=e.target; if(!t||!t.closest) return;
+      var ab=t.closest('.accbtn');
+      if(ab){
+        var i=+ab.dataset.i, order=['strong','normal','soft'];
+        var cur=M.accents[i]||'normal';
+        M.accents[i]=order[(order.indexOf(cur)+1)%order.length];
+        renderAccents(); return;
+      }
+      var mb=t.closest('.mutebtn');
+      if(mb){ var j=+mb.dataset.i; M.muted[j]=!M.muted[j]; renderAccents(); return; }
+    });
+
+    // subdivision
+    var subWrap=$('met-subdiv');
+    if(subWrap) subWrap.addEventListener('click',function(e){
+      var b=e.target&&e.target.closest?e.target.closest('button[data-sub]'):null; if(!b) return;
+      M.sub=+b.dataset.sub;
+      subWrap.querySelectorAll('button').forEach(function(x){ x.classList.toggle('on', x===b); });
+      restartIfPlaying();
+    });
+
+    // polyrhythm
+    var polyWrap=$('met-poly');
+    if(polyWrap) polyWrap.addEventListener('click',function(e){
+      var b=e.target&&e.target.closest?e.target.closest('button[data-poly]'):null; if(!b) return;
+      var v=b.dataset.poly; M.poly=(v==='0')?0:v;
+      polyWrap.querySelectorAll('button').forEach(function(x){ x.classList.toggle('on', x===b); });
+      restartIfPlaying();
+    });
+
+    // ── tap tempo ──
+    var taps=[], TAP_RESET=2000, tapBtn=$('met-tap');
+    if(tapBtn) tapBtn.addEventListener('click',function(){
+      var now=performance.now();
+      if(taps.length && now-taps[taps.length-1]>TAP_RESET) taps=[];
+      taps.push(now);
+      if(taps.length>6) taps.shift();
+      tapBtn.classList.add('flash'); setTimeout(function(){ tapBtn.classList.remove('flash'); },90);
+      if(taps.length>=2){
+        var sum=0; for(var i=1;i<taps.length;i++) sum+=taps[i]-taps[i-1];
+        var avg=sum/(taps.length-1);
+        var bpm=60000/avg;
+        if(bpm>=M.BPM_MIN && bpm<=M.BPM_MAX){ setBpm(bpm); restartIfPlaying(); }
+      }
+    });
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',wire);
+  else wire();
 })();
 </script>
 
