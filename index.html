@@ -269,6 +269,45 @@ body.mode-rechorder #builder{display:none !important}
 @keyframes rcFade{0%{opacity:0; transform:scale(.86)}25%{opacity:1; transform:scale(1)}100%{opacity:0; transform:scale(1.04)}}
 @media (prefers-reduced-motion:reduce){.rec-count .rc-num.flash{animation:none; opacity:1}}
 
+/* re-chord-er transport row (centered playback + record-all + metronome toggle) */
+.rec-transport{display:flex; align-items:flex-start; justify-content:center; gap:30px; flex-wrap:wrap; margin:20px 0 6px}
+.rec-tr-item{display:flex; flex-direction:column; align-items:center; gap:6px}
+.rec-tr-cap{font-family:Poppins,sans-serif; font-weight:800; font-size:.6rem; letter-spacing:.18em; text-transform:uppercase; color:#1f8f7e; line-height:1; text-align:center}
+.rec-xport{appearance:none; border:0; background:#000000; width:clamp(34px,8vw,46px); height:clamp(34px,8vw,46px); border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; -webkit-tap-highlight-color:transparent; position:relative}
+.rec-xport svg{width:42%; height:42%; display:block}
+.rec-xport .ic-play{fill:#ffffff}
+.rec-xport .ic-stop{fill:#ffffff; display:none}
+.rec-xport-play.playing .ic-play{display:none}
+.rec-xport-play.playing .ic-stop{display:block}
+.rec-xport:focus-visible{outline:2px solid #1f8f7e; outline-offset:3px}
+.rec-xport:disabled{opacity:.35; cursor:default}
+/* record-all button: red ring/dot, swaps to stop square while running */
+.rec-xport-rec .rec-rec-ring{width:42%; height:42%; border-radius:50%; background:#e03b3b; display:block}
+.rec-xport-rec .ic-stop{fill:#ffffff}
+.rec-xport-rec.recording{background:#b03036}
+.rec-xport-rec.recording .rec-rec-ring{display:none}
+.rec-xport-rec.recording .ic-stop{display:block}
+.rec-mettoggle{align-self:flex-start}
+.rec-mettoggle{display:flex; flex-direction:column; align-items:center; gap:6px; margin:0}
+.rec-mettoggle .rmt-lab{font-size:.6rem; letter-spacing:.14em; text-transform:uppercase; color:#6e6a5e; font-weight:700}
+
+/* mirrored part sections */
+.rec-part{margin:24px 0 6px}
+.rec-part-head{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.rec-part-head .rec-part-name{appearance:none; background:#ffffff url(“data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' stroke='%239a968c' stroke-width='2' fill='none'/></svg>”) no-repeat right 12px center; border:1px solid #e3ddd0; border-radius:8px; color:#17150e; font:600 .78rem Inter,system-ui,sans-serif; letter-spacing:.04em; padding:8px 32px 8px 12px; cursor:pointer; text-transform:uppercase}
+.rec-part-head .rec-rep{display:inline-flex; align-items:center; gap:6px}
+.rec-part-head .rec-rep-lab{font-size:.6rem; letter-spacing:.14em; text-transform:uppercase; color:#6e6a5e; font-weight:600}
+.rec-part-head .rec-rep-select{appearance:none; background:#ffffff url(“data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' stroke='%239a968c' stroke-width='2' fill='none'/></svg>”) no-repeat right 10px center; border:1px solid #e3ddd0; border-radius:8px; color:#17150e; font:600 .78rem Inter,system-ui,sans-serif; letter-spacing:.04em; padding:8px 28px 8px 10px; cursor:pointer}
+.rec-part-head .rec-part-name:focus-visible,.rec-part-head .rec-rep-select:focus-visible{outline:2px solid #1f8f7e; outline-offset:2px}
+.rec-part-head::after{content:””; flex:1; height:1px; background:#e3ddd0; order:5}
+.rec-mirror-note{font-size:.66rem; letter-spacing:.1em; text-transform:uppercase; color:#6e6a5e; font-weight:600; opacity:.8}
+.rec-mirror-note.linked{color:#1f8f7e}
+
+/* box highlight while it records during Record All */
+.rec-slot.rec-active{border-color:#1f8f7e; box-shadow:0 0 0 2px #1f8f7e}
+
+@media (max-width:560px){.rec-transport{gap:20px}}
+
 .bld-banner{margin:26px 0 4px; display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 18px}
 .bld-banner .keyname{font-family:Poppins,sans-serif; font-weight:800; font-size:1.5rem; letter-spacing:.04em}
 .bld-banner .numerals{color:#1f8f7e; font-weight:600; letter-spacing:.14em}
@@ -607,20 +646,38 @@ details.metset[open]>summary::after{content:”\2212”}
 
   <div id="rechorder">
     <div class="rec-banner" id="rec-banner"></div>
-    <section class="rec-section">
-      <div class="rec-head">
-        <span class="rec-title">Re-chord-er</span>
-        <span class="rec-mettoggle">
-          <span class="rmt-lab">Metronome</span>
-          <span class="sseg" role="group" aria-label="Metronome during recording">
-            <button type="button" id="rec-met-on" aria-pressed="false">On</button>
-            <button type="button" id="rec-met-off" class="on" aria-pressed="true">Off</button>
-          </span>
-        </span>
-      </div>
-      <div class="rec-slots" id="rec-slots"></div>
-      <p class="rec-hint">Tap an empty box to arm it — you'll hear a <b>one-bar count-in</b> on the metronome, then recording starts on the next <b>“1.”</b> Tap the box again to stop. With metronome <b>Off</b>, the click stops the moment recording begins; with it <b>On</b>, the click continues through your take.</p>
-    </section>
+
+```
+<p class="rec-hint" id="rec-hint">Tap an empty box to arm it — you'll hear a <b>one-bar count-in</b> on the metronome, then recording starts on the next <b>“1.”</b> Tap the box again to stop. Or use <b>Record All</b> below to record every box in sequence. With metronome <b>Off</b>, the click stops once recording begins; with it <b>On</b>, it continues through the take.</p>
+
+<div class="rec-transport">
+  <span class="rec-tr-item">
+    <span class="rec-tr-cap">Re-chord-er Playback</span>
+    <button type="button" class="rec-xport rec-xport-play" id="rec-play-all" aria-label="Play all recordings" aria-pressed="false">
+      <svg class="ic-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5v14l12-7z"/></svg>
+      <svg class="ic-stop" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
+    </button>
+  </span>
+  <span class="rec-tr-item">
+    <span class="rec-tr-cap">Record All</span>
+    <button type="button" class="rec-xport rec-xport-rec" id="rec-record-all" aria-label="Record all boxes" aria-pressed="false">
+      <span class="rec-rec-ring"></span>
+      <svg class="ic-stop" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
+    </button>
+  </span>
+  <span class="rec-mettoggle">
+    <span class="rmt-lab">Metronome</span>
+    <span class="sseg" role="group" aria-label="Metronome during recording">
+      <button type="button" id="rec-met-on" aria-pressed="false">On</button>
+      <button type="button" id="rec-met-off" class="on" aria-pressed="true">Off</button>
+    </span>
+  </span>
+</div>
+
+<div id="rec-parts"></div>
+<button type="button" class="bld-addpart" id="rec-addpart">+ Add song part</button>
+```
+
   </div>
 
   <div class="rec-count" id="rec-count" aria-hidden="true"><div class="rc-num" id="rec-count-num"></div></div>
@@ -1614,6 +1671,11 @@ function lfApply(){
       const step=BP.seq[(BP.idx-1+BP.seq.length)%BP.seq.length];
       if(step){ const el=wrap.querySelector(`.bld-slot[data-pi="${step.pi}"][data-si="${step.si}"]`); if(el){ el.classList.add('bld-active'); BP.activeEl=el; } }
     }
+
+    // tell the Re-chord-er module the song structure changed, so it can mirror it
+    if(window.__capoRechorder && window.__capoRechorder.onBuilderStructure){
+      try{ window.__capoRechorder.onBuilderStructure(window.__capoBuilder.structure()); }catch(e){}
+    }
   }
 
   // the degree this slot is scoped to (only the first 4 boxes map to the selected progression);
@@ -1896,6 +1958,19 @@ function lfApply(){
     }
   };
 
+  // expose the song structure (parts, labels, box counts, repeats) so the Re-chord-er
+  // module can mirror it. read-only snapshot — never hands out live references.
+  window.__capoBuilder={
+    structure:function(){
+      return BLD.parts.map((p,pi)=>({
+        label: partLabel(pi),
+        type: p.type,
+        repeat: Math.max(1,p.repeat||1),
+        boxes: p.slots.length
+      }));
+    }
+  };
+
   // delegated click for the playback button (banner is re-rendered, so bind on a stable parent)
   const bannerWrap=$('bld-banner');
   if(bannerWrap) bannerWrap.addEventListener('click',function(e){
@@ -1979,26 +2054,26 @@ function lfApply(){
 (function(){
   if(typeof document==='undefined') return;
   const $=id=>document.getElementById(id);
+  const SONG_PARTS=['Intro','Verse','Pre-Chorus','Chorus','Bridge','Solo','Refrain','Outro'];
 
-  // one box per felt beat of the current time signature, matching the builder's default count
   const SIG_GROUPS={
     '2/4':2,'3/4':3,'4/4':4,'5/4':5,'6/8':2,'7/8':3,'9/8':3,'12/8':4
   };
   function currentSig(){ const s=$('met-sig'); return s?s.value:'4/4'; }
   function feltBeats(){ return SIG_GROUPS[currentSig()]||4; }
+  function defaultSlots(){ const n=feltBeats(); const a=[]; for(let i=0;i<n;i++) a.push(null); return a; }
 
-  // module state: a flat list of slots; each is null (empty) or {url, buffer, audio}
+  // module state. parts mirror the builder until a Record-All freezes the layout.
+  // each part: {label,type,repeat,slots:[ null | {url,audio,peaks} ]}
   const REC={
-    slots:[null,null,null,null],
-    metOn:false,            // local toggle: keep metronome audible through the take
-    armedIdx:-1,            // slot currently arming/recording, or -1
-    state:'idle',           // 'idle' | 'arming' | 'recording'
-    mediaRecorder:null,
-    chunks:[],
-    stream:null,
-    countTimer:null,
-    startTimer:null,
-    playingIdx:-1
+    parts:[ {label:'Verse', type:'Verse', repeat:1, slots:[null,null,null,null]} ],
+    linked:true,            // true while mirroring the builder structure
+    metOn:false,            // keep metronome audible through the take
+    state:'idle',           // 'idle' | 'arming' | 'recording' | 'allrec' | 'allplay'
+    armed:null,             // {pi,si} during single-box record
+    mediaRecorder:null, chunks:[], stream:null,
+    startTimer:null, stepTimer:null,
+    playing:null            // {pi,si} during single-box playback
   };
 
   function met(){ return window.__capoMet; }
@@ -2008,82 +2083,132 @@ function lfApply(){
     }
     return window.__capoMetCtx||null;
   }
-
-  // stop the audible metronome the same way the user's pause button does: click #met-play
-  // while it's playing. harmless if it's already stopped.
   function stopMetronomeAudible(){
     const m=met();
-    if(m && m.isPlaying && m.isPlaying()){
-      const b=$('met-play'); if(b) b.click();
-    }
+    if(m && m.isPlaying && m.isPlaying()){ const b=$('met-play'); if(b) b.click(); }
   }
-  // ensure the metronome clock is running and audible (for the count-in). returns the
-  // audioContext time of the next downbeat to align recording to.
   function ensureMetronomeRunning(){
     const m=met(); if(!m) return null;
-    if(!(m.isPlaying && m.isPlaying())){
-      // start it through the public aligned-start so it uses all current settings
-      if(m.startAligned) m.startAligned();
-    }
+    if(!(m.isPlaying && m.isPlaying())){ if(m.startAligned) m.startAligned(); }
     return m.nextDownbeatTime ? m.nextDownbeatTime() : null;
   }
 
+  // ── mirroring the builder ──
+  // adopt the builder's structure: same parts, labels, repeats, and box counts.
+  // preserves nothing (mirror reflects builder), since while linked there are no takes yet.
+  function adoptStructure(struct){
+    if(!REC.linked || !struct || !struct.length) return;
+    REC.parts = struct.map(p=>{
+      const slots=[]; for(let i=0;i<Math.max(1,p.boxes);i++) slots.push(null);
+      return { label:p.label, type:p.type, repeat:Math.max(1,p.repeat||1), slots };
+    });
+    if(document.body.classList.contains('mode-rechorder')) render();
+  }
+
+  // detach from the builder: the user is now building the song from this module.
+  // any structural edit here (add part, change dropdown, add box) calls this once.
+  function unlink(){ REC.linked=false; }
+
+  function partOptions(selected){
+    return SONG_PARTS.map(p=>`<option value="${p}"${p===selected?' selected':''}>${p}</option>`).join('');
+  }
+  function repeatOptions(selected){
+    let html=''; for(let n=1;n<=16;n++) html+=`<option value="${n}"${n===selected?' selected':''}>${n}×</option>`; return html;
+  }
+
   // ── rendering ──
-  function slotHTML(i){
-    const s=REC.slots[i];
-    const micSVG='<svg class="mic-ic" viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3z" fill="currentColor"/><path d="M7 11a5 5 0 0 0 10 0M12 16v3M9 19h6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const MIC_SVG='<svg class="mic-ic" viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3z" fill="currentColor"/><path d="M7 11a5 5 0 0 0 10 0M12 16v3M9 19h6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  function slotHTML(pi,si){
+    const part=REC.parts[pi]; const s=part.slots[si];
+    const isArmed = REC.armed && REC.armed.pi===pi && REC.armed.si===si;
+    const isActive = REC.active && REC.active.pi===pi && REC.active.si===si; // recording during all-rec or single
     if(!s){
-      const arming=(REC.armedIdx===i);
-      const cls = arming ? (REC.state==='recording'?'recording':'armed') : 'empty';
-      const showDot = (REC.state==='recording' && arming);
-      const lab = REC.state==='recording'&&arming ? 'Recording — tap to stop'
-                : arming ? 'Counting in…'
-                : 'Tap to record';
-      const icon = showDot ? '<span class="rec-dot"></span>'
-                 : `<span class="mic">${micSVG}</span>`;
-      return `<div class="rec-slot ${cls}" data-i="${i}" role="button" tabindex="0" aria-label="${lab}">`
+      const recording = (REC.state==='recording'||REC.state==='allrec') && (isArmed||isActive);
+      const arming = REC.state==='arming' && isArmed;
+      const cls = recording ? 'recording' : (arming||isActive? 'armed' : 'empty');
+      const lab = recording ? 'Recording…' : arming ? 'Counting in…' : 'Tap to record';
+      const icon = recording ? '<span class="rec-dot"></span>' : `<span class="mic">${MIC_SVG}</span>`;
+      const extra = isActive&&!recording ? ' rec-active' : '';
+      return `<div class="rec-slot ${cls}${extra}" data-pi="${pi}" data-si="${si}" role="button" tabindex="0" aria-label="${lab}">`
         +`${icon}<span class="mic-lab">${lab}</span></div>`;
     }
-    return `<div class="rec-slot filled" data-i="${i}">`
-      +`<button type="button" class="slot-clear" data-i="${i}" aria-label="Delete recording">&times;</button>`
-      +`<div class="rec-cname">Take ${i+1}</div>`
-      +`<canvas class="rec-wave" data-i="${i}" width="300" height="54"></canvas>`
+    const playing = REC.playing && REC.playing.pi===pi && REC.playing.si===si;
+    const activeCls = isActive ? ' rec-active' : '';
+    return `<div class="rec-slot filled${activeCls}" data-pi="${pi}" data-si="${si}">`
+      +`<button type="button" class="slot-clear" data-pi="${pi}" data-si="${si}" aria-label="Delete recording">&times;</button>`
+      +`<div class="rec-cname">Box ${si+1}</div>`
+      +`<canvas class="rec-wave" data-pi="${pi}" data-si="${si}" width="300" height="54"></canvas>`
       +`<div class="rec-pb-wrap"><span class="rec-pb-cap">Recording Playback</span>`
-      +`<button type="button" class="rec-pb${REC.playingIdx===i?' playing':''}" data-i="${i}" aria-label="Play recording" aria-pressed="${REC.playingIdx===i?'true':'false'}">`
+      +`<button type="button" class="rec-pb${playing?' playing':''}" data-pi="${pi}" data-si="${si}" aria-label="Play recording" aria-pressed="${playing?'true':'false'}">`
       +`<svg class="ic-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5v14l12-7z"/></svg>`
       +`<svg class="ic-stop" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>`
       +`</button></div></div>`;
   }
 
+  function partLabel(pi){
+    // if linked, the builder already supplied disambiguated labels; otherwise number duplicates here
+    const part=REC.parts[pi];
+    if(REC.linked) return part.label;
+    const type=part.type;
+    const sameType=REC.parts.filter(p=>p.type===type);
+    if(sameType.length<=1) return type;
+    let n=0; for(let i=0;i<=pi;i++) if(REC.parts[i].type===type) n++;
+    return type+' '+n;
+  }
+
   function render(){
     const bn=$('rec-banner');
-    const m=met();
-    const label = (window.__capoState && window.__capoState.tuningLabel) ? '' : '';
     if(bn) bn.innerHTML=`<span class="keyname">Re-chord-er</span>`
-      +`<span class="chordseq">record guitar into any box — count-in &amp; timing follow the metronome's current tempo and time signature</span>`;
-    const wrap=$('rec-slots'); if(!wrap) return;
+      +`<span class="chordseq">record guitar into the boxes — count-in &amp; timing follow the metronome's tempo and time signature</span>`;
+
+    const wrap=$('rec-parts'); if(!wrap) return;
     let html='';
-    for(let i=0;i<REC.slots.length;i++) html+=slotHTML(i);
-    html+=`<button type="button" class="rec-addslot" id="rec-addslot" aria-label="Add recording box">+ Box</button>`;
+    REC.parts.forEach((part,pi)=>{
+      const note = REC.linked
+        ? `<span class="rec-mirror-note linked">mirrors Chord Builder</span>`
+        : `<span class="rec-mirror-note">editable</span>`;
+      html+=`<section class="rec-part">`
+        +`<div class="rec-part-head">`
+        +`<select class="rec-part-name" data-pi="${pi}" aria-label="Song part">${partOptions(part.type)}</select>`
+        +`<span class="rec-rep"><span class="rec-rep-lab">×</span><select class="rec-rep-select" data-pi="${pi}" aria-label="Repeat count">${repeatOptions(part.repeat||1)}</select></span>`
+        +note
+        +`</div><div class="rec-slots" data-pi="${pi}">`;
+      part.slots.forEach((_,si)=>{ html+=slotHTML(pi,si); });
+      html+=`<button type="button" class="rec-addslot" data-pi="${pi}" aria-label="Add recording box">+ Box</button>`;
+      html+=`</div></section>`;
+    });
     wrap.innerHTML=html;
-    // draw waveforms for filled slots
-    for(let i=0;i<REC.slots.length;i++){
-      const s=REC.slots[i];
-      if(s&&s.peaks){ const c=wrap.querySelector(`canvas.rec-wave[data-i="${i}"]`); if(c) drawWave(c,s.peaks); }
-    }
-    // reflect toggle
+
+    // overlay disambiguated labels onto each select
+    wrap.querySelectorAll('.rec-part-name').forEach(sel=>{
+      const pi=+sel.dataset.pi; const lab=partLabel(pi);
+      if(lab!==REC.parts[pi].type){ const opt=sel.querySelector(`option[value="${REC.parts[pi].type}"]`); if(opt) opt.textContent=lab; }
+    });
+
+    // draw waveforms
+    REC.parts.forEach((part,pi)=>{
+      part.slots.forEach((s,si)=>{
+        if(s&&s.peaks){ const c=wrap.querySelector(`canvas.rec-wave[data-pi="${pi}"][data-si="${si}"]`); if(c) drawWave(c,s.peaks); }
+      });
+    });
+
+    // reflect metronome toggle + transport state
     const on=$('rec-met-on'), off=$('rec-met-off');
     if(on){ on.classList.toggle('on',REC.metOn); on.setAttribute('aria-pressed',String(REC.metOn)); }
     if(off){ off.classList.toggle('on',!REC.metOn); off.setAttribute('aria-pressed',String(!REC.metOn)); }
+    const pa=$('rec-play-all'); if(pa){ pa.classList.toggle('playing',REC.state==='allplay'); pa.setAttribute('aria-pressed',String(REC.state==='allplay')); }
+    const ra=$('rec-record-all'); if(ra){ ra.classList.toggle('recording',REC.state==='allrec'); ra.setAttribute('aria-pressed',String(REC.state==='allrec')); }
   }
 
-  // grow/shrink default box count to match the time signature, never deleting a recording:
-  // pad with empties, trim only EMPTY trailing boxes
-  function resizeToSig(){
-    const want=feltBeats();
-    while(REC.slots.length<want) REC.slots.push(null);
-    while(REC.slots.length>want && REC.slots[REC.slots.length-1]==null) REC.slots.pop();
+  // flatten parts into an ordered list of {pi,si} for any filled box (record order ignores repeats)
+  function boxOrder(filledOnly){
+    const list=[];
+    REC.parts.forEach((part,pi)=> part.slots.forEach((s,si)=>{ if(!filledOnly||s) list.push({pi,si}); }));
+    return list;
   }
+  function getSlot(p){ return REC.parts[p.pi] && REC.parts[p.pi].slots[p.si]; }
+  function setSlot(p,val){ if(REC.parts[p.pi]) REC.parts[p.pi].slots[p.si]=val; }
 
   // ── waveform ──
   // reduce an AudioBuffer to N peak values (max abs amplitude per bucket)
@@ -2130,177 +2255,260 @@ function lfApply(){
     const ov=$('rec-count'); if(ov){ ov.classList.remove('show'); ov.setAttribute('aria-hidden','true'); }
   }
 
-  // ── recording flow ──
-  async function armSlot(i){
-    if(REC.state!=='idle') return;
-    // explicit, non-silent guards so a failed click never just "does nothing"
+  // acquire the mic (shared by single-box and record-all). resolves to a stream or null.
+  async function getMic(){
     if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
       alert('Recording needs microphone access, which the browser only allows over a secure connection.\n\nOpen this app via a web address (https://…) or http://localhost rather than as a local file, then try again.');
-      return;
+      return null;
     }
-    // get mic first so the permission prompt happens before the count.
-    // race against a timeout: in sandboxed iframes getUserMedia can hang without
-    // ever resolving OR rejecting, which would otherwise look like a dead click.
-    let stream;
     try{
-      stream=await Promise.race([
+      return await Promise.race([
         navigator.mediaDevices.getUserMedia({audio:true}),
         new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),8000))
       ]);
     }catch(err){
-      const name=err&&err.name?err.name:'';
-      const msg=err&&err.message?err.message:'';
-      if(msg==='timeout'){
-        alert('The microphone request did not respond. This usually means the page is running in a sandbox that blocks mic access (e.g. an in-app preview).\n\nDownload the file and open it over http://localhost or your https:// site to record.');
-      }else if(name==='NotAllowedError'||name==='SecurityError'){
-        alert('Microphone access was blocked. Allow mic access for this site in your browser settings, then try again.');
-      }else if(name==='NotFoundError'){
-        alert('No microphone was found on this device.');
-      }else{
-        alert('Could not start recording: '+(msg||'microphone unavailable')+'.');
-      }
-      return;
+      const name=err&&err.name?err.name:'', msg=err&&err.message?err.message:'';
+      if(msg==='timeout'){ alert('The microphone request did not respond. This usually means the page is running in a sandbox that blocks mic access (e.g. an in-app preview).\n\nDownload the file and open it over http://localhost or your https:// site to record.'); }
+      else if(name==='NotAllowedError'||name==='SecurityError'){ alert('Microphone access was blocked. Allow mic access for this site in your browser settings, then try again.'); }
+      else if(name==='NotFoundError'){ alert('No microphone was found on this device.'); }
+      else{ alert('Could not start recording: '+(msg||'microphone unavailable')+'.'); }
+      return null;
     }
-    REC.stream=stream;
-    REC.armedIdx=i; REC.state='arming';
-    render();
+  }
 
+  // compute count-in alignment: returns {downbeat, barStart, beats, spb, barLen, ctx}
+  async function planCountIn(){
     const ctx=audioCtx();
-    // browsers start the audio clock suspended until a gesture — resume it now
     if(ctx && ctx.state==='suspended'){ try{ await ctx.resume(); }catch(e){} }
     const m=met();
     const beats=feltBeats();
-    const spb = (m&&m.secsPerBeat)?m.secsPerBeat():0.5;
-    const barLen = beats*spb;
-    const wasPlaying = !!(m&&m.isPlaying&&m.isPlaying());
-
-    // start/locate the metronome and get the next downbeat to align to
+    const spb=(m&&m.secsPerBeat)?m.secsPerBeat():0.5;
+    const barLen=beats*spb;
+    const wasPlaying=!!(m&&m.isPlaying&&m.isPlaying());
     let downbeat=ensureMetronomeRunning();
-    const now = ctx?ctx.currentTime:(performance.now()/1000);
+    const now=ctx?ctx.currentTime:(performance.now()/1000);
     if(!downbeat||downbeat<now+0.05){ downbeat=now+spb; }
-
-    // We need a FULL audible bar of count-in before recording. If the metronome was just
-    // started fresh, its next downbeat is only moments away (the very first "1"), so push
-    // the recording start to the following downbeat so the whole first bar counts in.
-    // If it was already playing, the next downbeat already gives us a clean bar to count.
     if(!wasPlaying){ downbeat += barLen; }
-    // guard: make sure there's room for the count-in to begin in the future
     while(downbeat - barLen < now + 0.04){ downbeat += barLen; }
-
-    // the count-in occupies the bar ENDING on `downbeat`: beats fall at
-    // downbeat - beats*spb + k*spb for k=0..beats-1; recording starts at `downbeat`.
-    const barStart = downbeat - barLen;
-    const beatMs=Math.round(spb*1000);
-    document.documentElement.style.setProperty('--rc-beat', beatMs+'ms');
-
-    // schedule the visible count numbers on the wall clock, offset from the audio clock
-    function scheduleCount(){
-      for(let k=0;k<beats;k++){
-        const tAudio = barStart + k*spb;
-        const delay = Math.max(0,(tAudio-(ctx?ctx.currentTime:now))*1000);
-        setTimeout(()=>{ if(REC.state==='arming'&&REC.armedIdx===i) showCount(k+1); }, delay);
-      }
+    const barStart=downbeat - barLen;
+    document.documentElement.style.setProperty('--rc-beat', Math.round(spb*1000)+'ms');
+    return {downbeat,barStart,beats,spb,barLen,ctx,now};
+  }
+  function scheduleCount(plan,guardFn){
+    for(let k=0;k<plan.beats;k++){
+      const tAudio=plan.barStart + k*plan.spb;
+      const delay=Math.max(0,(tAudio-(plan.ctx?plan.ctx.currentTime:plan.now))*1000);
+      setTimeout(()=>{ if(guardFn()) showCount(k+1); }, delay);
     }
-    scheduleCount();
-
-    // begin actual recording exactly at the downbeat
-    const startDelay=Math.max(0,(downbeat-(ctx?ctx.currentTime:now))*1000);
-    REC.startTimer=setTimeout(()=>beginRecording(i), startDelay);
   }
 
-  function beginRecording(i){
-    if(REC.armedIdx!==i){ return; }
-    hideCount();
-    // honor the local toggle: if OFF, silence the metronome right on the "1"
-    if(!REC.metOn) stopMetronomeAudible();
+  // ── single-box recording ──
+  async function armSlot(pi,si){
+    if(REC.state!=='idle') return;
+    const stream=await getMic(); if(!stream) return;
+    REC.stream=stream;
+    REC.armed={pi,si}; REC.state='arming';
+    render();
 
-    let mr;
-    try{
-      mr=new MediaRecorder(REC.stream);
-    }catch(err){
-      try{ mr=new MediaRecorder(REC.stream,{mimeType:'audio/webm'}); }catch(e2){
-        alert('Recording is not supported in this browser.');
-        cleanupStream(); REC.state='idle'; REC.armedIdx=-1; render(); return;
-      }
-    }
+    const plan=await planCountIn();
+    scheduleCount(plan,()=>REC.state==='arming'&&REC.armed&&REC.armed.pi===pi&&REC.armed.si===si);
+    const startDelay=Math.max(0,(plan.downbeat-(plan.ctx?plan.ctx.currentTime:plan.now))*1000);
+    REC.startTimer=setTimeout(()=>beginSingle(pi,si),startDelay);
+  }
+  function beginSingle(pi,si){
+    if(!REC.armed||REC.armed.pi!==pi||REC.armed.si!==si) return;
+    hideCount();
+    if(!REC.metOn) stopMetronomeAudible();
+    const mr=makeRecorder(); if(!mr) return;
     REC.mediaRecorder=mr; REC.chunks=[];
     mr.ondataavailable=e=>{ if(e.data&&e.data.size>0) REC.chunks.push(e.data); };
-    mr.onstop=()=>finalizeRecording(i);
+    mr.onstop=()=>finalizeSingle(pi,si);
     mr.start();
     REC.state='recording';
     render();
   }
-
   function stopRecording(){
     if(REC.state!=='recording'||!REC.mediaRecorder) return;
     try{ REC.mediaRecorder.stop(); }catch(e){}
   }
-
-  async function finalizeRecording(i){
-    // always pause the metronome after a take
+  async function finalizeSingle(pi,si){
     stopMetronomeAudible();
-    const type=(REC.mediaRecorder&&REC.mediaRecorder.mimeType)||'audio/webm';
-    const blob=new Blob(REC.chunks,{type});
-    const url=URL.createObjectURL(blob);
+    const take=await buildTake();
     cleanupStream();
-
-    // decode for the waveform
-    let peaks=null;
-    try{
-      const buf=await blob.arrayBuffer();
-      const ctx=audioCtx();
-      if(ctx){
-        const audioBuf=await ctx.decodeAudioData(buf.slice(0));
-        peaks=computePeaks(audioBuf,56);
-      }
-    }catch(e){ /* waveform optional */ }
-
-    const audio=new Audio(url);
-    audio.preload='auto';
-    audio.onended=()=>{ REC.playingIdx=-1; render(); };
-    REC.slots[i]={url,audio,peaks:peaks||new Array(56).fill(0.15)};
-    REC.state='idle'; REC.armedIdx=-1;
-    REC.mediaRecorder=null; REC.chunks=[];
+    setSlot({pi,si},take);
+    REC.state='idle'; REC.armed=null; REC.mediaRecorder=null; REC.chunks=[];
     render();
   }
 
+  function makeRecorder(){
+    try{ return new MediaRecorder(REC.stream); }
+    catch(err){
+      try{ return new MediaRecorder(REC.stream,{mimeType:'audio/webm'}); }
+      catch(e2){ alert('Recording is not supported in this browser.'); cleanupStream(); REC.state='idle'; render(); return null; }
+    }
+  }
+  async function buildTake(mimeOverride){
+    const type=mimeOverride||(REC.mediaRecorder&&REC.mediaRecorder.mimeType)||'audio/webm';
+    const blob=new Blob(REC.chunks,{type});
+    const url=URL.createObjectURL(blob);
+    let peaks=null;
+    try{
+      const buf=await blob.arrayBuffer(); const ctx=audioCtx();
+      if(ctx){ const ab=await ctx.decodeAudioData(buf.slice(0)); peaks=computePeaks(ab,56); }
+    }catch(e){}
+    const audio=new Audio(url); audio.preload='auto';
+    return {url,audio,peaks:peaks||new Array(56).fill(0.15)};
+  }
   function cleanupStream(){
     if(REC.stream){ try{ REC.stream.getTracks().forEach(t=>t.stop()); }catch(e){} REC.stream=null; }
   }
 
-  function clearSlot(i){
-    const s=REC.slots[i];
-    if(s){ try{ if(s.audio){s.audio.pause();} URL.revokeObjectURL(s.url); }catch(e){} }
-    if(REC.playingIdx===i) REC.playingIdx=-1;
-    REC.slots[i]=null;
-    // trim trailing empties back toward the time-signature default
-    resizeToSig();
+  function clearSlot(pi,si){
+    const s=getSlot({pi,si});
+    if(s){ try{ if(s.audio) s.audio.pause(); URL.revokeObjectURL(s.url); }catch(e){} }
+    if(REC.playing&&REC.playing.pi===pi&&REC.playing.si===si) REC.playing=null;
+    setSlot({pi,si},null);
     render();
   }
 
-  function togglePlay(i){
-    const s=REC.slots[i]; if(!s||!s.audio) return;
-    // stop any other playing take
-    if(REC.playingIdx!==-1 && REC.playingIdx!==i){
-      const o=REC.slots[REC.playingIdx]; if(o&&o.audio){ o.audio.pause(); o.audio.currentTime=0; }
-    }
-    if(REC.playingIdx===i){
-      s.audio.pause(); s.audio.currentTime=0; REC.playingIdx=-1;
-    }else{
-      s.audio.currentTime=0; s.audio.play().catch(()=>{}); REC.playingIdx=i;
-    }
+  // ── single-box playback (one bar, but here we just play the clip in full on tap) ──
+  function togglePlay(pi,si){
+    const s=getSlot({pi,si}); if(!s||!s.audio) return;
+    if(REC.playing){ const o=getSlot(REC.playing); if(o&&o.audio){ o.audio.pause(); o.audio.currentTime=0; } }
+    if(REC.playing&&REC.playing.pi===pi&&REC.playing.si===si){ REC.playing=null; }
+    else{ s.audio.currentTime=0; s.audio.onended=()=>{ REC.playing=null; render(); }; s.audio.play().catch(()=>{}); REC.playing={pi,si}; }
     render();
   }
 
-  // cancel any in-progress arm/record when leaving the module
+  // ── RECORD ALL ──
+  // one count-in, then record each box in document order for exactly one bar each,
+  // advancing automatically. ignores repeats. overwrites every box. metronome toggle
+  // applies: if Off, the click stops once the first box begins recording.
+  async function recordAll(){
+    if(REC.state!=='idle'){ if(REC.state==='allrec') stopAll(); return; }
+    const order=boxOrder(false);
+    if(!order.length) return;
+    const stream=await getMic(); if(!stream) return;
+    REC.stream=stream;
+    // freeze mirroring as soon as Record All begins, and clear all existing takes
+    REC.linked=false;
+    order.forEach(p=>{ const s=getSlot(p); if(s){ try{ if(s.audio) s.audio.pause(); URL.revokeObjectURL(s.url); }catch(e){} } setSlot(p,null); });
+    REC.state='allrec';
+    render();
+
+    const plan=await planCountIn();
+    scheduleCount(plan,()=>REC.state==='allrec');
+    REC._order=order; REC._oi=0; REC._barLen=plan.barLen; REC._stopMetAtStart=!REC.metOn;
+    const startDelay=Math.max(0,(plan.downbeat-(plan.ctx?plan.ctx.currentTime:plan.now))*1000);
+    REC.startTimer=setTimeout(()=>recordAllStep(plan.downbeat),startDelay);
+  }
+  async function recordAllStep(barStartTime){
+    if(REC.state!=='allrec'){ return; }
+    if(REC._oi>=REC._order.length){ return finishAll(); }
+    // stop the metronome on the very first box if toggle is Off
+    if(REC._oi===0 && REC._stopMetAtStart) stopMetronomeAudible();
+    const p=REC._order[REC._oi];
+    REC.active=p;
+    hideCount();
+    // start a fresh recorder for this box
+    const mr=makeRecorder(); if(!mr){ return; }
+    REC.mediaRecorder=mr; REC.chunks=[];
+    mr.ondataavailable=e=>{ if(e.data&&e.data.size>0) REC.chunks.push(e.data); };
+    mr.onstop=()=>{ /* handled in advance() to keep timing precise */ };
+    mr.start();
+    render();
+    // schedule the end of this bar
+    const ctx=audioCtx();
+    const endTime=barStartTime+REC._barLen;
+    const delay=Math.max(0,(endTime-(ctx?ctx.currentTime:performance.now()/1000))*1000);
+    REC.stepTimer=setTimeout(()=>advanceAll(p,endTime),delay);
+  }
+  async function advanceAll(p,endTime){
+    if(REC.state!=='allrec') return;
+    const mr=REC.mediaRecorder;
+    // stop the recorder and WAIT for its final flush (the last ondataavailable fires
+    // before onstop), so REC.chunks holds the complete bar before we build the take.
+    const mime=(mr&&mr.mimeType)||'audio/webm';
+    await new Promise(res=>{
+      if(!mr){ res(); return; }
+      mr.onstop=res;
+      try{ mr.stop(); }catch(e){ res(); }
+    });
+    if(REC.state!=='allrec'){ return; } // cancelled mid-flush
+    const take=await buildTake(mime);
+    setSlot(p,take);
+    REC.mediaRecorder=null; REC.chunks=[];
+    REC.active=null;
+    REC._oi++;
+    render();
+    if(REC._oi>=REC._order.length){ return finishAll(); }
+    recordAllStep(endTime);
+  }
+  function finishAll(){
+    stopMetronomeAudible();
+    cleanupStream();
+    if(REC.stepTimer){ clearTimeout(REC.stepTimer); REC.stepTimer=null; }
+    REC.state='idle'; REC.active=null; REC._order=null;
+    hideCount(); render();
+  }
+  function stopAll(){
+    // user-cancelled record-all: stop recorder, keep whatever was captured so far
+    if(REC.mediaRecorder){ try{ REC.mediaRecorder.stop(); }catch(e){} }
+    finishAll();
+  }
+
+  // ── PLAY ALL ──
+  // play each filled box in order, each for exactly one bar (locked to tempo), expanding
+  // each part by its repeat count. loops back to the start when it reaches the end.
+  function playAll(){
+    if(REC.state==='allplay'){ return stopPlayAll(); }
+    if(REC.state!=='idle') return;
+    // build the expanded play order: each part repeated `repeat` times, filled boxes only
+    const seq=[];
+    REC.parts.forEach((part,pi)=>{
+      const reps=Math.max(1,part.repeat||1);
+      for(let r=0;r<reps;r++){ part.slots.forEach((s,si)=>{ if(s) seq.push({pi,si}); }); }
+    });
+    if(!seq.length) return;
+    REC.state='allplay'; REC._pseq=seq; REC._pi=0;
+    render();
+    playAllStep();
+  }
+  function playAllStep(){
+    if(REC.state!=='allplay'){ return; }
+    if(REC._pi>=REC._pseq.length){ REC._pi=0; }       // loop
+    const p=REC._pseq[REC._pi];
+    const s=getSlot(p);
+    REC.active=p; render();
+    const m=met();
+    const beats=feltBeats();
+    const spb=(m&&m.secsPerBeat)?m.secsPerBeat():0.5;
+    const barLen=beats*spb;
+    if(s&&s.audio){ try{ s.audio.currentTime=0; s.audio.play().catch(()=>{}); }catch(e){} }
+    // advance after exactly one bar regardless of clip length (tempo-locked)
+    REC.stepTimer=setTimeout(()=>{
+      if(s&&s.audio){ try{ s.audio.pause(); s.audio.currentTime=0; }catch(e){} }
+      REC._pi++;
+      playAllStep();
+    }, Math.round(barLen*1000));
+  }
+  function stopPlayAll(){
+    if(REC.stepTimer){ clearTimeout(REC.stepTimer); REC.stepTimer=null; }
+    if(REC._pseq){ const p=REC._pseq[REC._pi]; const s=p&&getSlot(p); if(s&&s.audio){ try{s.audio.pause(); s.audio.currentTime=0;}catch(e){} } }
+    REC.state='idle'; REC.active=null; REC._pseq=null; render();
+  }
+
+  // ── waveform helpers used by buildTake/render ──
+
+  // cancel everything when leaving the module
   function onLeave(){
-    if(REC.countTimer){ clearTimeout(REC.countTimer); REC.countTimer=null; }
     if(REC.startTimer){ clearTimeout(REC.startTimer); REC.startTimer=null; }
-    if(REC.state==='recording'){ try{ REC.mediaRecorder&&REC.mediaRecorder.stop(); }catch(e){} }
+    if(REC.stepTimer){ clearTimeout(REC.stepTimer); REC.stepTimer=null; }
+    if(REC.state==='recording'||REC.state==='allrec'){ try{ REC.mediaRecorder&&REC.mediaRecorder.stop(); }catch(e){} }
+    if(REC.state==='allplay'){ stopPlayAll(); }
     hideCount(); cleanupStream();
-    if(REC.state!=='idle'){ REC.state='idle'; REC.armedIdx=-1; }
-    // stop any playback
-    if(REC.playingIdx!==-1){ const o=REC.slots[REC.playingIdx]; if(o&&o.audio){o.audio.pause();} REC.playingIdx=-1; }
+    REC.state='idle'; REC.armed=null; REC.active=null;
+    if(REC.playing){ const o=getSlot(REC.playing); if(o&&o.audio) o.audio.pause(); REC.playing=null; }
   }
 
   // ── events (scoped to this module) ──
@@ -2308,20 +2516,31 @@ function lfApply(){
     if(!document.body.classList.contains('mode-rechorder')) return;
     const t=e.target; if(!t||!t.closest) return;
 
+    if(t.closest('#rec-play-all')){ playAll(); return; }
+    if(t.closest('#rec-record-all')){ recordAll(); return; }
+
     const clr=t.closest('.slot-clear');
-    if(clr){ e.stopPropagation(); clearSlot(+clr.dataset.i); return; }
+    if(clr){ e.stopPropagation(); clearSlot(+clr.dataset.pi,+clr.dataset.si); return; }
 
     const pb=t.closest('.rec-pb');
-    if(pb){ e.stopPropagation(); togglePlay(+pb.dataset.i); return; }
+    if(pb){ e.stopPropagation(); togglePlay(+pb.dataset.pi,+pb.dataset.si); return; }
 
-    const add=t.closest('#rec-addslot');
-    if(add){ REC.slots.push(null); render(); return; }
+    const add=t.closest('.rec-addslot');
+    if(add){ unlink(); const pi=+add.dataset.pi; REC.parts[pi].slots.push(null); render(); return; }
+
+    if(t.closest('#rec-addpart')){
+      unlink();
+      REC.parts.push({ label:'Verse', type:'Verse', repeat:1, slots:defaultSlots() });
+      render(); return;
+    }
 
     const slot=t.closest('.rec-slot');
     if(slot){
-      const i=+slot.dataset.i;
-      if(REC.state==='recording' && REC.armedIdx===i){ stopRecording(); return; }
-      if(REC.state==='idle' && !REC.slots[i]){ armSlot(i); return; }
+      const pi=+slot.dataset.pi, si=+slot.dataset.si;
+      // ignore taps on boxes during all-record / all-play
+      if(REC.state==='allrec'||REC.state==='allplay') return;
+      if(REC.state==='recording' && REC.armed && REC.armed.pi===pi && REC.armed.si===si){ stopRecording(); return; }
+      if(REC.state==='idle' && !getSlot({pi,si})){ armSlot(pi,si); return; }
       return;
     }
   });
@@ -2332,24 +2551,25 @@ function lfApply(){
     if(t&&t.classList&&t.classList.contains('rec-slot')){ e.preventDefault(); t.click(); }
   });
 
+  // part-type & repeat dropdowns (only active when unlinked)
+  const partsWrap=$('rec-parts');
+  if(partsWrap) partsWrap.addEventListener('change',function(e){
+    const sel=e.target&&e.target.closest?e.target.closest('.rec-part-name'):null;
+    if(sel){ unlink(); REC.parts[+sel.dataset.pi].type=sel.value; render(); return; }
+    const rep=e.target&&e.target.closest?e.target.closest('.rec-rep-select'):null;
+    if(rep){ unlink(); REC.parts[+rep.dataset.pi].repeat=Math.max(1,parseInt(rep.value,10)||1); render(); return; }
+  });
+
   // metronome on/off toggle
   const onBtn=$('rec-met-on'), offBtn=$('rec-met-off');
   if(onBtn) onBtn.addEventListener('click',()=>{ REC.metOn=true; render(); });
   if(offBtn) offBtn.addEventListener('click',()=>{ REC.metOn=false; render(); });
 
-  // keep box count in step with the time signature (only while not mid-record)
-  const sig=$('met-sig');
-  if(sig) sig.addEventListener('change',function(){
-    if(REC.state!=='idle') return;
-    resizeToSig();
-    if(document.body.classList.contains('mode-rechorder')) render();
-  });
+  // public hooks used by setMode and the builder
+  window.__capoRechorder={ render, onLeave, onBuilderStructure:adoptStructure };
 
-  // public hooks used by setMode
-  window.__capoRechorder={ render, onLeave };
-
-  // initial sizing/render so it's ready when first opened
-  resizeToSig();
+  // initial mirror from the builder if it has already rendered; else default render
+  if(window.__capoBuilder && window.__capoBuilder.structure){ adoptStructure(window.__capoBuilder.structure()); }
   render();
 })();
 </script>
