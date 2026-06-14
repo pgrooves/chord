@@ -205,7 +205,7 @@ body.mode-rechorder #builder{display:none !important}
 
 .rec-banner{margin:26px 0 4px; display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 18px}
 .rec-banner .keyname{font-family:Poppins,sans-serif; font-weight:800; font-size:1.5rem; letter-spacing:.04em}
-.rec-banner .numerals{color:#1f8f7e; font-weight:600; letter-spacing:.14em}
+.rec-banner .numerals{color:var(–accent); font-weight:600; letter-spacing:.14em}
 .rec-banner .chordseq{color:#6e6a5e; font-size:.95rem}
 @media (max-width:560px){.rec-banner .keyname{font-size:1.25rem}}
 
@@ -214,8 +214,8 @@ body.mode-rechorder #builder{display:none !important}
 .rec-mettoggle .rmt-lab{font-size:.6rem; letter-spacing:.14em; text-transform:uppercase; color:#6e6a5e; font-weight:700}
 .rec-mettoggle .sseg{display:flex; border:1px solid #e3ddd0; border-radius:8px; overflow:hidden; background:#ffffff}
 .rec-mettoggle .sseg button{appearance:none; border:0; background:transparent; color:#6e6a5e; font:600 .74rem Inter,system-ui,sans-serif; padding:7px 14px; cursor:pointer; transition:background .2s,color .2s}
-.rec-mettoggle .sseg button.on{background:#1f8f7e; color:#ffffff}
-.rec-mettoggle .sseg button:focus-visible{outline:2px solid #1f8f7e; outline-offset:2px}
+.rec-mettoggle .sseg button.on{background:var(–accent); color:var(–accent-ink)}
+.rec-mettoggle .sseg button:focus-visible{outline:2px solid var(–accent); outline-offset:2px}
 
 .rec-section{margin:30px 0 6px}
 .rec-head{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
@@ -226,13 +226,13 @@ body.mode-rechorder #builder{display:none !important}
 @media (max-width:560px){.rec-slots{grid-template-columns:repeat(2,1fr); gap:10px}}
 .rec-slot{background:#ffffff; border:1px solid #e3ddd0; border-radius:12px; min-height:150px; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:0 1px 3px rgba(40,35,20,.07); position:relative}
 .rec-slot.empty{border-style:dashed; cursor:pointer; color:#6e6a5e; -webkit-tap-highlight-color:transparent; transition:border-color .15s,color .15s}
-.rec-slot.empty:hover{border-color:#1f8f7e; color:#1f8f7e}
-.rec-slot.empty .mic{display:flex; align-items:center; justify-content:center; color:#1f8f7e}
+.rec-slot.empty:hover{border-color:var(–accent); color:var(–accent)}
+.rec-slot.empty .mic{display:flex; align-items:center; justify-content:center; color:var(–accent)}
 .rec-slot.empty .mic .mic-ic{display:block}
-.rec-slot.armed .mic{color:#1f8f7e}
+.rec-slot.armed .mic{color:var(–accent)}
 .rec-slot.recording .mic{color:#b03036}
 .rec-slot.empty .mic-lab{font-size:.64rem; letter-spacing:.16em; text-transform:uppercase; margin-top:8px}
-.rec-slot.armed{border-style:solid; border-color:#1f8f7e; color:#1f8f7e; box-shadow:0 0 0 2px #1f8f7e}
+.rec-slot.armed{border-style:solid; border-color:var(–accent); color:var(–accent); box-shadow:0 0 0 2px var(–accent)}
 .rec-slot.recording{border-style:solid; border-color:#b03036; box-shadow:0 0 0 2px #b03036}
 .rec-slot.recording .mic{color:#b03036}
 .rec-slot.recording .mic-lab{color:#b03036}
@@ -246,40 +246,41 @@ body.mode-rechorder #builder{display:none !important}
 .rec-slot.filled .slot-clear{display:flex}
 .rec-slot .slot-clear:hover{border-color:#b03036; color:#b03036}
 .rec-slot .rec-pb-wrap{margin-top:8px; display:flex; flex-direction:column; align-items:center; gap:5px}
-.rec-slot .rec-pb-cap{font-family:Poppins,sans-serif; font-weight:800; font-size:.54rem; letter-spacing:.16em; text-transform:uppercase; color:#1f8f7e; line-height:1; text-align:center}
+.rec-slot .rec-pb-cap{font-family:Poppins,sans-serif; font-weight:800; font-size:.54rem; letter-spacing:.16em; text-transform:uppercase; color:var(–accent); line-height:1; text-align:center}
 .rec-slot .rec-pb{appearance:none; border:0; background:#000000; width:38px; height:38px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; -webkit-tap-highlight-color:transparent}
 .rec-slot .rec-pb svg{width:42%; height:42%; display:block}
 .rec-slot .rec-pb .ic-play{fill:#ffffff}
 .rec-slot .rec-pb .ic-stop{fill:#ffffff; display:none}
 .rec-slot .rec-pb.playing .ic-play{display:none}
 .rec-slot .rec-pb.playing .ic-stop{display:block}
-.rec-slot .rec-pb:focus-visible{outline:2px solid #1f8f7e; outline-offset:3px}
+.rec-slot .rec-pb:focus-visible{outline:2px solid var(–accent); outline-offset:3px}
 
 .rec-addslot{display:flex; align-items:center; justify-content:center; min-height:150px; border:1px dashed #e3ddd0; border-radius:12px; background:transparent; cursor:pointer; color:#6e6a5e; font:600 .72rem Inter,system-ui,sans-serif; letter-spacing:.14em; text-transform:uppercase; -webkit-tap-highlight-color:transparent}
-.rec-addslot:hover{border-color:#1f8f7e; color:#1f8f7e}
+.rec-addslot:hover{border-color:var(–accent); color:var(–accent)}
 
-.rec-hint{margin:10px 0 0; padding:10px 14px; border-left:3px solid #1f8f7e; background:#ffffff; border-radius:0 8px 8px 0; font-size:.82rem; color:#6e6a5e; max-width:640px}
+.rec-hint{margin:10px 0 0; padding:10px 14px; border-left:3px solid var(–accent); background:#ffffff; border-radius:0 8px 8px 0; font-size:.82rem; color:#6e6a5e; max-width:640px}
 .rec-hint b{color:#17150e}
 
 /* big fading count-in overlay */
 .rec-count{position:fixed; inset:0; z-index:90; display:none; align-items:center; justify-content:center; pointer-events:none}
 .rec-count.show{display:flex}
-.rec-count .rc-num{font-family:Poppins,sans-serif; font-weight:800; font-size:clamp(7rem,30vw,16rem); color:#1f8f7e; line-height:1; text-shadow:0 4px 30px rgba(0,0,0,.18); opacity:0}
+.rec-count .rc-num{font-family:Poppins,sans-serif; font-weight:800; font-size:clamp(7rem,30vw,16rem); color:var(–accent); line-height:1; text-shadow:0 4px 30px rgba(0,0,0,.18); opacity:0}
 .rec-count .rc-num.flash{animation:rcFade var(–rc-beat,500ms) ease-in-out}
 @keyframes rcFade{0%{opacity:0; transform:scale(.86)}25%{opacity:1; transform:scale(1)}100%{opacity:0; transform:scale(1.04)}}
 @media (prefers-reduced-motion:reduce){.rec-count .rc-num.flash{animation:none; opacity:1}}
 
 /* re-chord-er transport row (centered download + playback + record-all + metronome toggle) */
 .rec-transport{display:flex; align-items:flex-start; justify-content:center; gap:26px; flex-wrap:wrap; margin:20px 0 6px}
+.rec-hp-note{font-family:Poppins,sans-serif; font-weight:800; font-size:.6rem; letter-spacing:.16em; text-transform:uppercase; color:var(–accent); line-height:1.3; text-align:center; margin:18px 0 0}
 .rec-tr-item{display:flex; flex-direction:column; align-items:center; gap:6px; width:84px}
-.rec-tr-cap{font-family:Poppins,sans-serif; font-weight:800; font-size:.6rem; letter-spacing:.16em; text-transform:uppercase; color:#1f8f7e; line-height:1.3; text-align:center; min-height:2.4em; display:flex; align-items:flex-end; justify-content:center}
+.rec-tr-cap{font-family:Poppins,sans-serif; font-weight:800; font-size:.6rem; letter-spacing:.16em; text-transform:uppercase; color:var(–accent); line-height:1.3; text-align:center; min-height:2.4em; display:flex; align-items:flex-end; justify-content:center}
 .rec-xport{appearance:none; border:0; background:#000000; width:clamp(34px,8vw,46px); height:clamp(34px,8vw,46px); border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; -webkit-tap-highlight-color:transparent; position:relative}
 .rec-xport svg{width:46%; height:46%; display:block}
 .rec-xport .ic-play{fill:#ffffff}
 .rec-xport .ic-stop{fill:#ffffff; display:none}
 .rec-xport-play.playing .ic-play{display:none}
 .rec-xport-play.playing .ic-stop{display:block}
-.rec-xport:focus-visible{outline:2px solid #1f8f7e; outline-offset:3px}
+.rec-xport:focus-visible{outline:2px solid var(–accent); outline-offset:3px}
 .rec-xport:disabled{opacity:.35; cursor:default}
 /* record-all button: red ring/dot, swaps to stop square while running */
 .rec-xport-rec .rec-rec-ring{width:42%; height:42%; border-radius:50%; background:#e03b3b; display:block}
@@ -289,7 +290,7 @@ body.mode-rechorder #builder{display:none !important}
 .rec-xport-rec.recording .ic-stop{display:block}
 .rec-xport-dl{background:#000000}
 .rec-mettoggle{display:flex; flex-direction:column; align-items:center; gap:6px; margin:0; width:auto}
-.rec-mettoggle .rmt-lab{font-size:.6rem; letter-spacing:.14em; text-transform:uppercase; color:#6e6a5e; font-weight:700; min-height:2.4em; display:flex; align-items:flex-end}
+.rec-mettoggle .rmt-lab{font-size:.6rem; letter-spacing:.14em; text-transform:uppercase; color:var(–accent); font-weight:700; min-height:2.4em; display:flex; align-items:flex-end}
 
 /* mirrored part sections */
 .rec-part{margin:24px 0 6px}
@@ -298,13 +299,13 @@ body.mode-rechorder #builder{display:none !important}
 .rec-part-head .rec-rep{display:inline-flex; align-items:center; gap:6px}
 .rec-part-head .rec-rep-lab{font-size:.6rem; letter-spacing:.14em; text-transform:uppercase; color:#6e6a5e; font-weight:600}
 .rec-part-head .rec-rep-select{appearance:none; background:#ffffff url(“data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' stroke='%239a968c' stroke-width='2' fill='none'/></svg>”) no-repeat right 10px center; border:1px solid #e3ddd0; border-radius:8px; color:#17150e; font:600 .78rem Inter,system-ui,sans-serif; letter-spacing:.04em; padding:8px 28px 8px 10px; cursor:pointer}
-.rec-part-head .rec-part-name:focus-visible,.rec-part-head .rec-rep-select:focus-visible{outline:2px solid #1f8f7e; outline-offset:2px}
+.rec-part-head .rec-part-name:focus-visible,.rec-part-head .rec-rep-select:focus-visible{outline:2px solid var(–accent); outline-offset:2px}
 .rec-part-head::after{content:””; flex:1; height:1px; background:#e3ddd0; order:5}
 .rec-mirror-note{font-size:.66rem; letter-spacing:.1em; text-transform:uppercase; color:#6e6a5e; font-weight:600; opacity:.8}
-.rec-mirror-note.linked{color:#1f8f7e}
+.rec-mirror-note.linked{color:var(–accent)}
 
 /* box highlight while it records during Record All */
-.rec-slot.rec-active{border-color:#1f8f7e; box-shadow:0 0 0 2px #1f8f7e}
+.rec-slot.rec-active{border-color:var(–accent); box-shadow:0 0 0 2px var(–accent)}
 
 @media (max-width:560px){.rec-transport{gap:20px}}
 
@@ -466,15 +467,204 @@ details.metset[open]>summary::after{content:”\2212”}
 .met-beat .accbtn,.met-beat .mutebtn{width:34px}
 .met-beat .accbtn{height:34px}
 }
+
+/* ── dark mode: switch toggle (additive) ── */
+.mast-top{display:flex; align-items:center; justify-content:space-between; gap:14px}
+.theme-switch{appearance:none; flex:0 0 auto; position:relative; width:52px; height:28px; border-radius:999px; border:1px solid #d8d2c4; background:#e9e4d8; cursor:pointer; padding:0; transition:background .25s,border-color .25s; -webkit-tap-highlight-color:transparent}
+.theme-switch .knob{position:absolute; top:2px; left:2px; width:22px; height:22px; border-radius:50%; background:#ffffff; box-shadow:0 1px 3px rgba(0,0,0,.25); transition:transform .25s, background .25s; display:flex; align-items:center; justify-content:center}
+.theme-switch .knob svg{width:12px; height:12px; display:block; color:#9a968c; transition:color .25s}
+.theme-switch:focus-visible{outline:2px solid var(–accent); outline-offset:3px}
+.theme-switch[aria-pressed=“true”]{background:var(–accent); border-color:var(–accent)}
+.theme-switch[aria-pressed=“true”] .knob{transform:translateX(24px); background:#15140f}
+.theme-switch[aria-pressed=“true”] .knob svg{color:var(–accent)}
+@media (prefers-reduced-motion:reduce){.theme-switch,.theme-switch .knob{transition:none}}
+
+/* ── dark mode palette (additive, scoped to body.dark) ── */
+body.dark{
+–bg:#14130e; –panel:#211f18; –line:#363227; –ink:#f3efe4; –ink-dim:#a8a294;
+–card:#211f18; –grid-string:#efebdf; –grid-fret:#6f6a59; –inlay:#7c7765;
+}
+html.dark, body.dark{background:#14130e !important; color:#f3efe4 !important}
+body.dark .controls{background:#14130e; border-bottom-color:#363227}
+body.dark .card,
+body.dark .seg,
+body.dark .sseg,
+body.dark select,
+body.dark .met-sig select,
+body.dark .tuner-row button,
+body.dark .modtabs .modseg,
+body.dark details.libbar,
+body.dark details.metset,
+body.dark .bld-arrows button,
+body.dark .bld-del,
+body.dark .bld-rep-select,
+body.dark .bld-part-select,
+body.dark .bld-slot,
+body.dark .bld-slot .slot-clear,
+body.dark .bld-addpart,
+body.dark .bld-cc,
+body.dark .bld-picker-top .pt-close,
+body.dark .met-step button,
+body.dark .capo-note,
+body.dark .ctl-toggle{background:#211f18; border-color:#363227; color:#f3efe4}
+body.dark .bld-picker-panel{background:#1a1813}
+body.dark .met-tap{background:#211f18; border-color:#efebdf; color:#f3efe4}
+body.dark .met-tap:active,
+body.dark .met-tap.flash{background:#efebdf; color:#14130e}
+
+/* playback / transport buttons invert in dark: cream circle, dark glyph */
+body.dark .met-play,
+body.dark .bld-play,
+body.dark .rec-slot .rec-pb,
+body.dark .rec-xport,
+body.dark .rec-xport-dl{background:#efebdf}
+body.dark .met-play .ic-play,
+body.dark .met-play .ic-stop,
+body.dark .bld-play .ic-play,
+body.dark .bld-play .ic-stop,
+body.dark .rec-slot .rec-pb .ic-play,
+body.dark .rec-slot .rec-pb .ic-stop,
+body.dark .rec-xport .ic-play,
+body.dark .rec-xport .ic-stop{fill:#14130e}
+body.dark .libgrid input[type=text],
+body.dark .chip,
+body.dark .met-beat .accbtn,
+body.dark .met-segrow button{background:#14130e; border-color:#363227; color:#a8a294}
+body.dark .libgrid input[type=text]{color:#f3efe4}
+body.dark .card{box-shadow:0 1px 4px rgba(0,0,0,.5)}
+body.dark .bld-slot{box-shadow:0 1px 4px rgba(0,0,0,.5)}
+
+/* text tones */
+body.dark .byline,
+body.dark .tuneline,
+body.dark .prog-banner .chordseq,
+body.dark .bld-banner .chordseq,
+body.dark .capo-note,
+body.dark .strum-lab,
+body.dark .strum small,
+body.dark .field label,
+body.dark .tuner-label,
+body.dark .tuner-label small,
+body.dark .tuner-row button .o,
+body.dark .libgrid label,
+body.dark .libstatus,
+body.dark .card .lib-meta,
+body.dark details.libbar summary,
+body.dark details.metset>summary,
+body.dark .seg button,
+body.dark .sseg button,
+body.dark .modtabs .modseg button,
+body.dark .chip,
+body.dark .met-segrow button,
+body.dark .met-beat .bnum,
+body.dark .met-beat .mutebtn,
+body.dark .bld-rep-lab,
+body.dark .ctl-collapsed-label,
+body.dark .met-label,
+body.dark .bld-arrows button,
+body.dark .bld-del,
+body.dark .bld-slot .slot-clear,
+body.dark .bld-addpart{color:#a8a294}
+body.dark h1,
+body.dark .tuneline b,
+body.dark .capo-note b,
+body.dark .card .cname,
+body.dark .card .lib-meta b,
+body.dark .option h2,
+body.dark .prog-banner .keyname,
+body.dark .bld-banner .keyname,
+body.dark .met-pitchrow .pval,
+body.dark .met-tt label,
+body.dark .met-sig label,
+body.dark .met-tval .num{color:#f3efe4}
+
+/* accent-toned text — tracks the live per-tuning accent via the CSS variable */
+body.dark .kicker,
+body.dark .prog-banner .numerals,
+body.dark .bld-banner .numerals,
+body.dark .bld-play-cap,
+body.dark #oct-read,
+body.dark .tuner-row button.oct,
+body.dark .libstatus .clr{color:var(–accent)}
+body.dark .met-play-cap{color:var(–accent)}
+body.dark h1 .cup{filter:invert(1) brightness(1.15)}
+
+/* dividers / hairlines */
+body.dark .option h2::after,
+body.dark .bld-head::after{background:#363227}
+body.dark footer{border-color:#363227; color:#a8a294}
+
+/* active / pressed states keep the accent — tracks live per-tuning accent */
+body.dark .seg button[aria-pressed=“true”],
+body.dark .sseg button.on,
+body.dark .modtabs .modseg button[aria-pressed=“true”],
+body.dark .tuner-row button.playing,
+body.dark .chip.on,
+body.dark .met-segrow button.on,
+body.dark .met-beat .accbtn[data-acc=“strong”]{background:var(–accent); border-color:var(–accent); color:var(–accent-ink)}
+body.dark .tuner-row button.playing .o{color:var(–accent-ink)}
+body.dark .met-beat .accbtn[data-acc=“normal”]{background:#211f18; border-color:#56513f; color:#f3efe4}
+body.dark .met-beat .accbtn[data-acc=“soft”]{background:#14130e; border-color:#363227; color:#7c7765}
+body.dark .met-beat .mutebtn.on{background:#efebdf; border-color:#efebdf; color:#14130e}
+body.dark .bld-slot.bld-active,
+body.dark .card.strumming,
+body.dark .bld-cc.sel{border-color:var(–accent); box-shadow:0 0 0 2px var(–accent)}
+
+/* dropdown chevrons recolored for dark; explicit bg + position so the arrow doesn’t tile */
+body.dark select,
+body.dark .bld-rep-select,
+body.dark .bld-part-select{background-color:#211f18; background-repeat:no-repeat; background-image:url(“data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' stroke='%23a8a294' stroke-width='2' fill='none'/></svg>”)}
+body.dark select{background-position:right 14px center}
+body.dark .bld-rep-select{background-position:right 10px center}
+body.dark .bld-part-select{background-position:right 12px center}
+body.dark .met-sig select{background-color:#211f18; background-repeat:no-repeat; background-position:right 7px center; background-image:url(“data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='7'><path d='M1 1l4 4 4-4' stroke='%23a8a294' stroke-width='2' fill='none'/></svg>”)}
+
+/* ── re-chord-er module (additive dark) ── */
+body.dark .rec-banner .chordseq,
+body.dark .rec-mettoggle .sseg button,
+body.dark .rec-hint,
+body.dark .rec-addslot,
+body.dark .rec-part-head .rec-rep-lab,
+body.dark .rec-part-head .rec-rep-select,
+body.dark .rec-slot.empty{color:#a8a294}
+body.dark .rec-banner .keyname,
+body.dark .rec-head .rec-title,
+body.dark .rec-hint b{color:#f3efe4}
+body.dark .rec-banner .numerals,
+body.dark .rec-mettoggle .rmt-lab,
+body.dark .rec-slot .rec-pb-cap,
+body.dark .rec-tr-cap{color:var(–accent)}
+body.dark .rec-head::after{background:#363227}
+body.dark .rec-slot,
+body.dark .rec-mettoggle .sseg,
+body.dark .rec-slot .slot-clear,
+body.dark .rec-part-head .rec-part-name,
+body.dark .rec-part-head .rec-rep-select{background-color:#211f18; border-color:#363227; color:#f3efe4}
+body.dark .rec-part-head .rec-part-name,
+body.dark .rec-part-head .rec-rep-select{background-repeat:no-repeat; background-image:url(“data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' stroke='%23a8a294' stroke-width='2' fill='none'/></svg>”)}
+body.dark .rec-part-head .rec-part-name{background-position:right 12px center}
+body.dark .rec-part-head .rec-rep-select{background-position:right 10px center}
+body.dark .rec-slot .rec-cname{color:#f3efe4}
+body.dark .rec-mettoggle .sseg button.on{background:var(–accent); color:var(–accent-ink)}
+body.dark .rec-addslot{border-color:#363227}
+body.dark .rec-hint{background:#211f18}
 </style>
 
 </head>
 <body>
+<script>try{if(localStorage.getItem('capo-theme')==='dark'){document.documentElement.classList.add('dark');document.body.classList.add('dark');}}catch(e){}</script>
 <style id="accent-css"></style>
 <div id="mosaic" aria-hidden="true"></div>
 <div class="wrap">
   <header class="mast">
-    <div class="kicker">Practice Companion</div>
+    <div class="mast-top">
+      <div class="kicker">Practice Companion</div>
+      <button type="button" id="theme-switch" class="theme-switch" role="switch" aria-checked="false" aria-pressed="false" aria-label="Dark mode">
+        <span class="knob">
+          <svg class="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </span>
+      </button>
+    </div>
     <h1><img class="cup" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAFpklEQVR4nO3dXZLbNhCFUTqVDcz+F6klxE+qcmYkixIJohv3nOdU9Of+AFBUzbYBAAAAAAAAAAAAAAAAAAAAAAAAADP8mv0EVvb19fXfq//mdrud/hmkPS6f+2f2EwDmEQAIJgAQTAAmmnUeTntcnhOAQfZcEPO4zCYAEEwAIJgAQDABgGACAMEEAIIJwCRp38W7B6AmARgg7bt49wD0JQAQTAAgmABAMAGYJO287jpBTQIwwN4r3mcPRdrjcpwADJI2jCLQkwAMlPadu+/6+xGAAtLO5XYBdQjAYGlbckeBXgTgAmnDKAJ9CMBF0s7lrgf0IADFpJ3L7QLmEoALpW3JHQXqE4CLpQ2jCNQmABOknctdD6hLAApLO5fbBVxPACZJ25I7CtQkABOlDaMI1CMAk6Wdy10PqEUAmkg7l9sFXEMAIJgAFJC2HXcMqEMAGknbjjsGjCcARaStxnYBNQhAM2mrsV3AWAIAwQSgkLTtuGPAfALQUNp23DFgHAGAYAJQTNp23DFgLgFoKm077hgwhgAUlLYa2wXMIwCNpa3GdgHnEwAIJgBFpW3HHQPmEICi0rbZtvdzCEBjaau1XcL5BKCgPavhiGFIe1wEAKIJQDFpq7DVfy4BgGACUEjaKmz1n08Aikj7+s3XfjUIQCNpX79Z/ccTgALStuC2/nUIAAQTgMnSVmGrfy0CAMEEYKK0VdjqX48ATHS73X7N+Aef9rg8JwAFPBuK0cOS9rj8JABFpK3KdgPwRNrdee4KBAAAAAAAAAAAOMCtmE+4O60PtxR/zm8BIJgAQDABgGACAMEE4AkXlnrwOR0jABBMACCYAEAwAYBgAgDBBACC/Tv7CcBV/GWin6Je7Cf8KKiuPcN65PNLiIEdAEs6I9z3/8fKIXANgOWcvWtbeRdoB8AyRg7qqrsBOwCWcNUqvdpuQABo7+qhXCkCAkBr/qDpMQJAW7OHcPbjn0EAXljtos8qfC7nEABaqrL6VnkenxIAOKhzBAQAggkAnKDrLkAAIJgAwEk67gL8FoA4j75C7Di8Z7ADIMqz+wfOuq+gW0gEYAc3nazh1eeY+DkLAAQTACLsXd3P2AV0OgYIAAQTAJb37qqedC1AACCYAMAAXa4DCABL+3Q7n3IMEICdUv5BkEUAIJgAQDABgGACAMEEAIIJAAQTAAgmAG9wLwCrEQAIJgAs7dN78rvcy3+UAMAAXY6LAgDBBIDlvbudT9n+b5sAQDQBIMLeVf2M1b/L+X/bBACiCcCbOtWd/3u1uied/e8EgBZG/+mus4a/2wLhj4MSJ3Glf8YOgDaqr67Vn98jAgDBBIBWqq6yVZ/XKwIAwQSAdqqtttWezzsE4AOdP/COHr3fVT6DKs/jUwIAwQSAtmavvrMf/wwCQGuzhnCF4d82AWABVw/jKsO/bQLAIq4aypWGf9v8FoCF3IdzxL3+qw3+nR0Ayzl7WFcd/m3btmVf2BX8qmy8o8N35DNaefDvHAFY2p9DvCcGCUP/JwEgRtpw7+EaAAQTAAgmABBMACCYAEAwAYBgAnCAr5XG8v6OJwAQTAAgmABAMAGAYAIAwQQAggkABBOAg3xXPYb39RoCAMEEAIIJAAQTAAgmABBMACCYAEAwATiB76zP5f28jgBAMAGAYAIAwQQAgrnYMpi/IHyci4LjeGM/YKjrEov3eLOeMOTrEYefvCGbYU+WHoW4F2/YeSUpCjEv1ODzroQQLP8CDT5HrRyCZV+YwedsK4bAjUAQTAAg2HJbmu8cBThqxa3/3bIv7Dsh4F0rD/7d8i/wOyHglYTBv4t5oX8jCrmShv2R6Bf/N6KwnvRhf8Qb8gFxqMuQv8ebNZhYHGeox/HGNtA5IoYXAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJjuN6DSs7dTNPPkAAAAAElFTkSuQmCC" alt="">CAPO-CCINO</h1>
     <div class="byline">Every voicing in Standard, Open D, Open G, DADGAD, &amp; FACGCE — in any key.</div>
     <div class="modtabs">
@@ -650,6 +840,7 @@ details.metset[open]>summary::after{content:”\2212”}
 ```
 <p class="rec-hint" id="rec-hint">Tap an empty box to arm it — you'll hear a <b>one-bar count-in</b> on the metronome, then recording starts on the next <b>“1.”</b> Tap the box again to stop. Or use <b>Record All</b> below to record every box in sequence. With metronome <b>Off</b>, the click stops once recording begins; with it <b>On</b>, it continues through the take.</p>
 
+<div class="rec-hp-note">(Wear Headphones When Recording)</div>
 <div class="rec-transport">
   <span class="rec-tr-item" id="rec-dl-item" style="display:none">
     <span class="rec-tr-cap">Download</span>
@@ -745,6 +936,11 @@ function transposeName(numeral,suffix,key){
 }
 
 function diagramSVG(frets,shift,accent,barres){
+  // theme-aware palette so diagrams stay legible in light AND dark mode
+  const dk = document.body && document.body.classList.contains('dark');
+  const C = dk
+    ? {line:'#efebdf', fret:'#6f6a59', inlay:'#7c7765', dot:'#efebdf', num:'#a8a294', openFill:'#211f18'}
+    : {line:'#111111', fret:'#b9b6ae', inlay:'#c9c6be', dot:'#111111', num:'#555555', openFill:'#ffffff'};
   const fretted=frets.filter(f=>f>0);
   let base=1, rows=4;
   if(fretted.length){
@@ -758,41 +954,41 @@ function diagramSVG(frets,shift,accent,barres){
   let s=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img">`;
   for(let r=0;r<=rows;r++){
     const isNut=(r===0&&base===1);
-    s+=`<line x1="${sx(0)}" y1="${fy(r)}" x2="${sx(5)}" y2="${fy(r)}" stroke="${isNut?'#111':'#b9b6ae'}" stroke-width="${isNut?5:1.6}"/>`;
+    s+=`<line x1="${sx(0)}" y1="${fy(r)}" x2="${sx(5)}" y2="${fy(r)}" stroke="${isNut?C.line:C.fret}" stroke-width="${isNut?5:1.6}"/>`;
   }
   for(let r=0;r<rows;r++){
     const f=base+r, cy=fy(r)+RH/2;
     if(f===12){
-      s+=`<circle cx="${(sx(1)+sx(2))/2}" cy="${cy}" r="4.6" fill="#c9c6be"/><circle cx="${(sx(3)+sx(4))/2}" cy="${cy}" r="4.6" fill="#c9c6be"/>`;
+      s+=`<circle cx="${(sx(1)+sx(2))/2}" cy="${cy}" r="4.6" fill="${C.inlay}"/><circle cx="${(sx(3)+sx(4))/2}" cy="${cy}" r="4.6" fill="${C.inlay}"/>`;
     } else if(INLAY.has(f)){
-      s+=`<circle cx="${(sx(2)+sx(3))/2}" cy="${cy}" r="4.6" fill="#c9c6be"/>`;
+      s+=`<circle cx="${(sx(2)+sx(3))/2}" cy="${cy}" r="4.6" fill="${C.inlay}"/>`;
     }
     if(INLAY.has(f)||f===12||(r===0&&base>1)){
-      s+=`<text x="${LEFT-9}" y="${cy+4}" font-size="11.5" font-family="Inter,system-ui,sans-serif" fill="#555" text-anchor="end">${f}</text>`;
+      s+=`<text x="${LEFT-9}" y="${cy+4}" font-size="11.5" font-family="Inter,system-ui,sans-serif" fill="${C.num}" text-anchor="end">${f}</text>`;
     }
   }
   for(let i=0;i<6;i++)
-    s+=`<line x1="${sx(i)}" y1="${fy(0)}" x2="${sx(i)}" y2="${fy(rows)}" stroke="#1a1a1a" stroke-width="1.8"/>`;
+    s+=`<line x1="${sx(i)}" y1="${fy(0)}" x2="${sx(i)}" y2="${fy(rows)}" stroke="${C.line}" stroke-width="1.8"/>`;
   for(let i=0;i<6;i++){
     const f=frets[i];
     if(f===-1){
-      s+=`<path d="M${sx(i)-5} ${TOP-17} l10 10 M${sx(i)+5} ${TOP-17} l-10 10" stroke="#111" stroke-width="2"/>`;
+      s+=`<path d="M${sx(i)-5} ${TOP-17} l10 10 M${sx(i)+5} ${TOP-17} l-10 10" stroke="${C.line}" stroke-width="2"/>`;
     } else if(f===0){
-      s+=`<circle cx="${sx(i)}" cy="${TOP-12}" r="5.2" fill="none" stroke="#111" stroke-width="2"/>`;
+      s+=`<circle cx="${sx(i)}" cy="${TOP-12}" r="5.2" fill="none" stroke="${C.line}" stroke-width="2"/>`;
     } else {
       const r=f-base; if(r<0||r>=rows) continue;
       const cy=fy(r)+RH/2;
       const wasOpen=(shift>0&&f===shift);
       s+= wasOpen
-        ? `<circle cx="${sx(i)}" cy="${cy}" r="7.6" fill="#ffffff" stroke="${accent}" stroke-width="3.4"/>`
-        : `<circle cx="${sx(i)}" cy="${cy}" r="8.2" fill="#111"/>`;
+        ? `<circle cx="${sx(i)}" cy="${cy}" r="7.6" fill="${C.openFill}" stroke="${accent}" stroke-width="3.4"/>`
+        : `<circle cx="${sx(i)}" cy="${cy}" r="8.2" fill="${C.dot}"/>`;
     }
   }
   // book barre arcs (black)
   (barres||[]).forEach(([f,s1,s2])=>{
     const r=f-base; if(r<0||r>=rows) return;
     const y=fy(r)+RH/2-9.5, xm=(sx(s1)+sx(s2))/2;
-    s+=`<path d="M${sx(s1)} ${y} Q ${xm} ${y-11} ${sx(s2)} ${y}" fill="none" stroke="#111" stroke-width="3" stroke-linecap="round"/>`;
+    s+=`<path d="M${sx(s1)} ${y} Q ${xm} ${y-11} ${sx(s2)} ${y}" fill="none" stroke="${C.line}" stroke-width="3" stroke-linecap="round"/>`;
   });
   // capo barre arc over ring notes (accent)
   if(shift>0){
@@ -867,9 +1063,12 @@ input[type=text]:focus-visible{outline:2px solid __ACC__; outline-offset:2px}
 .met-segrow button.on{background:__ACC__; border-color:__ACC__; color:__INK__}
 .met-segrow button:focus-visible{outline:2px solid __ACC__; outline-offset:2px}
 .met-pitchrow input[type=range]{accent-color:__ACC__}
-details.metset>summary::after{color:__ACC__}
-details.metset[open]>summary::after{color:__ACC__}`;
+details.metset>summary::after{content:"+"; margin-left:auto; font-size:1rem; color:__ACC__}
+details.metset[open]>summary::after{content:"\\2212"; color:__ACC__}`;
   document.getElementById('accent-css').textContent=tpl.split('__ACC__').join(c).split('__INK__').join(ink);
+  // expose the live accent as CSS variables so dark-mode rules can track the tuning too
+  document.documentElement.style.setProperty('--accent', c);
+  document.documentElement.style.setProperty('--accent-ink', ink);
 }
 
 function render(){
@@ -2047,6 +2246,11 @@ function lfApply(){
   // initial render so it's ready when first switched to
   resizePartsToSig();
   renderBuilder();
+
+  // allow other scripts (e.g. theme toggle) to refresh builder diagrams
+  window.__capoRedrawBuilder = function(){
+    if(document.body.classList.contains('mode-builder')) renderBuilder();
+  };
 })();
 </script>
 
@@ -2690,6 +2894,33 @@ function lfApply(){
   btn.addEventListener('click',()=>{
     const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
     window.scrollTo({top:0, behavior: reduce ? 'auto' : 'smooth'});
+  });
+})();
+</script>
+
+<script>
+(function(){
+  const sw=document.getElementById('theme-switch');
+  if(!sw) return;
+  let on=false;
+  try{ on=localStorage.getItem('capo-theme')==='dark'; }catch(e){}
+  function refreshDiagrams(){
+    try{ if(typeof render==='function' && !document.body.classList.contains('mode-builder')) render(); }catch(e){}
+    try{ if(typeof window.__capoRedrawBuilder==='function') window.__capoRedrawBuilder(); }catch(e){}
+  }
+  function apply(initial){
+    document.documentElement.classList.toggle('dark',on);
+    document.body.classList.toggle('dark',on);
+    sw.setAttribute('aria-checked',String(on));
+    sw.setAttribute('aria-pressed',String(on));
+    sw.setAttribute('aria-label', on?'Dark mode on':'Dark mode off');
+    if(!initial) refreshDiagrams();
+  }
+  apply(true);
+  sw.addEventListener('click',function(){
+    on=!on;
+    try{ localStorage.setItem('capo-theme', on?'dark':'light'); }catch(e){}
+    apply(false);
   });
 })();
 </script>
