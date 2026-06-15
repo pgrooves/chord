@@ -5,9 +5,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light">
-<title>Capo-ccino — Practice Companion</title>
+<title>Capo-ccino, Practice Companion</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -27,9 +27,6 @@ body{background:#faf8f2; background:#faf8f2; color:#17150e; font-family:Inter,sy
 /* ── mosaic signature band ── */
 #mosaic{display:grid; grid-auto-flow:column; height:64px; width:100%; gap:0; overflow:hidden}
 #mosaic span{display:block; transition:background-color .6s ease}
-/* extend the colored bars up into the iOS status-bar inset */
-#mosaic{height:calc(64px + env(safe-area-inset-top,0px)); margin-top:calc(-1 * env(safe-area-inset-top,0px)); padding-top:env(safe-area-inset-top,0px)}
-#mosaic span{height:calc(64px + env(safe-area-inset-top,0px)); margin-top:calc(-1 * env(safe-area-inset-top,0px))}
 
 /* ── masthead ── */
 header.mast{padding:34px 0 10px}
@@ -49,6 +46,23 @@ h1 .cup{height:1em; width:auto; vertical-align:-0.12em; margin-right:.22em; disp
 select{width:100%; appearance:none; background:#ffffff url(“data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' stroke='%239a968c' stroke-width='2' fill='none'/></svg>”) no-repeat right 14px center; border:1px solid #e3ddd0; border-radius:10px; color:#17150e; font:600 .95rem Inter,sans-serif; padding:11px 38px 11px 14px; cursor:pointer}
 .tuneline{margin-top:10px; font-size:.84rem; color:#6e6a5e}
 .tuneline b{color:#17150e; font-weight:600; letter-spacing:.12em}
+
+/* ── capo control (additive) ── */
+.controls-inner:has(.field-capo){grid-template-columns:1fr 1fr 1fr}
+.capo-hint{margin-top:8px; font-size:.8rem; color:#6e6a5e; display:flex; align-items:center; gap:7px}
+.capo-hint b{color:#17150e; font-weight:600}
+.capo-hint .capo-chip{display:inline-flex; align-items:center; gap:5px; font:700 .62rem Inter,system-ui,sans-serif; letter-spacing:.1em; text-transform:uppercase; color:#9a5b00; background:#fdf0d8; border:1px solid #f0d49a; border-radius:999px; padding:3px 9px; white-space:nowrap}
+.capo-hint .capo-chip.off{color:#6e6a5e; background:#f3efe6; border-color:#e3ddd0}
+@media (max-width:560px){.controls-inner:has(.field-capo){grid-template-columns:1fr 1fr}.field-capo{grid-column:1/-1}}
+
+/* ── builder capo banner chip (additive) ── */
+.bld-capo{display:inline-flex; align-items:center; gap:9px; flex-wrap:wrap}
+.bld-capo small{font-size:.72rem; color:#6e6a5e; opacity:.85}
+.bld-capo-chip{display:inline-flex; align-items:center; gap:5px; font:700 .62rem Inter,system-ui,sans-serif; letter-spacing:.1em; text-transform:uppercase; color:#9a5b00; background:#fdf0d8; border:1px solid #f0d49a; border-radius:999px; padding:3px 9px; white-space:nowrap}
+.bld-capo-chip.off{color:#6e6a5e; background:#f3efe6; border-color:#e3ddd0}
+body.dark .bld-capo small{color:#a8a294}
+body.dark .bld-capo-chip{color:#f0c987; background:#3a2f17; border-color:#5c4a22}
+body.dark .bld-capo-chip.off{color:#a8a294; background:#211f18; border-color:#363227}
 
 /* ── progression banner ── */
 .prog-banner{margin:26px 0 4px; display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 18px}
@@ -79,8 +93,7 @@ footer{margin:54px 0 26px; color:#6e6a5e; font-size:.78rem; line-height:1.6; bor
 }
 @media (max-width:560px){
 .cards{grid-template-columns:repeat(2,1fr); gap:10px}
-#mosaic{height:calc(46px + env(safe-area-inset-top,0px))}
-#mosaic span{height:calc(46px + env(safe-area-inset-top,0px))}
+#mosaic{height:46px}
 .prog-banner .keyname{font-size:1.25rem}
 }
 @media (prefers-color-scheme: dark){html,body{background:#faf8f2!important; color:#17150e!important}}
@@ -402,6 +415,13 @@ body.mode-rechorder #builder{display:none !important}
 .bld-cc .cc-meta b{color:#17150e; font-weight:600}
 .bld-picker-empty{padding:30px 20px 40px; color:#6e6a5e; font-size:.9rem; text-align:center}
 
+/* preview (“play before you pick”) button on each carousel card (additive) */
+.bld-cc .cc-preview{display:flex; align-items:center; justify-content:center; gap:6px; width:100%; margin-top:8px; appearance:none; border:1px solid #e3ddd0; background:#faf8f2; color:#17150e; border-radius:8px; padding:7px 6px; cursor:pointer; font:700 .62rem Inter,system-ui,sans-serif; letter-spacing:.12em; text-transform:uppercase; transition:background .15s,border-color .15s,color .15s; -webkit-tap-highlight-color:transparent}
+.bld-cc .cc-preview svg{width:11px; height:11px; display:block; fill:currentColor}
+.bld-cc .cc-preview:hover{border-color:#1f8f7e; color:#1f8f7e}
+.bld-cc .cc-preview:focus-visible{outline:2px solid #1f8f7e; outline-offset:2px}
+.bld-cc.strumming{border-color:#1f8f7e; box-shadow:0 0 0 2px #1f8f7e}
+
 /* ── metronome bar (additive) ── */
 .met-bar{display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:14px; padding:0 0 4px}
 .controls.collapsed .met-bar{padding-bottom:0}
@@ -514,6 +534,11 @@ body.dark .met-step button,
 body.dark .capo-note,
 body.dark .ctl-toggle{background:#211f18; border-color:#363227; color:#f3efe4}
 body.dark .bld-picker-panel{background:#1a1813}
+body.dark .capo-hint{color:#a8a294}
+body.dark .capo-hint b{color:#f3efe4}
+body.dark .capo-hint .capo-chip{color:#f0c987; background:#3a2f17; border-color:#5c4a22}
+body.dark .capo-hint .capo-chip.off{color:#a8a294; background:#211f18; border-color:#363227}
+body.dark .bld-cc .cc-preview{background:#14130e; border-color:#363227; color:#f3efe4}
 body.dark .met-tap{background:#211f18; border-color:#efebdf; color:#f3efe4}
 body.dark .met-tap:active,
 body.dark .met-tap.flash{background:#efebdf; color:#14130e}
@@ -672,7 +697,7 @@ body.dark .rec-hint{background:#211f18}
       </button>
     </div>
     <h1><img class="cup" src="data:image/png;base64,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" alt="">CAPO-CCINO</h1>
-    <div class="byline">Every voicing in Standard, Open D, Open G, DADGAD, &amp; FACGCE — in any key.</div>
+    <div class="byline">Every voicing in Standard, Open D, Open G, DADGAD, &amp; FACGCE, in any key.</div>
     <div class="modtabs">
       <div class="modseg" role="group" aria-label="Module">
         <button type="button" id="mod-reader" data-mode="reader" aria-pressed="true">Chord Reader</button>
@@ -771,7 +796,7 @@ body.dark .rec-hint{background:#211f18}
         </div>
       </div>
     <div class="tuner">
-      <div class="tuner-label"><span>Tuner</span><small>tap a string — ring switch on to hear</small><span id="oct-read"></span></div>
+      <div class="tuner-label"><span>Tuner</span><small>tap a string, ring switch on to hear</small><span id="oct-read"></span></div>
       <div class="tuner-row" id="tuner-row"></div>
       <div class="strum"><span class="strum-lab">Strum</span>
         <div class="sseg" id="strum-seg">
@@ -791,7 +816,12 @@ body.dark .rec-hint{background:#211f18}
         <label for="sel-prog">Progression</label>
         <select id="sel-prog"></select>
       </div>
+      <div class="field field-capo">
+        <label for="sel-capo">Capo</label>
+        <select id="sel-capo" aria-describedby="capo-hint"></select>
+      </div>
     </div>
+    <div class="capo-hint" id="capo-hint"></div>
     <div class="tuneline" id="tuneline"></div>
     <details class="libbar">
     <summary>Filter &amp; sort chords</summary>
@@ -830,7 +860,7 @@ body.dark .rec-hint{background:#211f18}
   <div class="prog-banner" id="banner"></div>
   <div id="capo"></div>
 
-  <div class="libstatus" id="libstatus"><span class="cnt" id="libcnt"></span><button type="button" class="clr" id="libclear">Clear filters — back to progressions</button></div>
+  <div class="libstatus" id="libstatus"><span class="cnt" id="libcnt"></span><button type="button" class="clr" id="libclear">Clear filters, back to progressions</button></div>
 
   <main id="options"></main>
 
@@ -844,7 +874,7 @@ body.dark .rec-hint{background:#211f18}
     <div class="rec-banner" id="rec-banner"></div>
 
 ```
-<p class="rec-hint" id="rec-hint">Tap an empty box to arm it — you'll hear a <b>one-bar count-in</b> on the metronome, then recording starts on the next <b>“1.”</b> Tap the box again to stop. Or use <b>Record All</b> below to record every box in sequence. With metronome <b>Off</b>, the click stops once recording begins; with it <b>On</b>, it continues through the take.</p>
+<p class="rec-hint" id="rec-hint">Tap an empty box to arm it, you'll hear a <b>one-bar count-in</b> on the metronome, then recording starts on the next <b>“1.”</b> Tap the box again to stop. Or use <b>Record All</b> below to record every box in sequence. With metronome <b>Off</b>, the click stops once recording begins; with it <b>On</b>, it continues through the take.</p>
 
 <div class="rec-hp-note">(Wear Headphones When Recording)</div>
 <div class="rec-transport">
@@ -928,7 +958,7 @@ const PC={'C':0,'C#':1,'Db':1,'D':2,'D#':3,'Eb':3,'E':4,'F':5,'F#':6,'Gb':6,'G':
 const noteName=(pc,key)=> (FLATKEYS.has(key)?FLATS:SHARPS)[((pc%12)+12)%12];
 const INLAY=new Set([3,5,7,9,15,17]); // 12 handled as double
 
-let state={t:'st', key:'C', prog:0};
+let state={t:'st', key:'C', prog:0, capo:'auto'};
 
 function transposeName(numeral,suffix,key){
   const [deg,minor]=DEG[numeral];
@@ -941,12 +971,17 @@ function transposeName(numeral,suffix,key){
   return name;
 }
 
-function diagramSVG(frets,shift,accent,barres){
+function diagramSVG(frets,shift,accent,barres,capo){
   // theme-aware palette so diagrams stay legible in light AND dark mode
   const dk = document.body && document.body.classList.contains('dark');
   const C = dk
     ? {line:'#efebdf', fret:'#6f6a59', inlay:'#7c7765', dot:'#efebdf', num:'#a8a294', openFill:'#211f18'}
     : {line:'#111111', fret:'#b9b6ae', inlay:'#c9c6be', dot:'#111111', num:'#555555', openFill:'#ffffff'};
+  // when a capo is in effect the `frets` passed in are already capo-relative
+  // (a note at the capo = 0). the capo becomes the new nut, so the shape is drawn
+  // in open position with a thick accent bar standing in for the nut.
+  capo = capo|0;
+  const hasCapo = capo>=1;
   const fretted=frets.filter(f=>f>0);
   let base=1, rows=4;
   if(fretted.length){
@@ -960,6 +995,11 @@ function diagramSVG(frets,shift,accent,barres){
   let s=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img">`;
   for(let r=0;r<=rows;r++){
     const isNut=(r===0&&base===1);
+    if(r===0 && hasCapo && base===1){
+      // capo standing in for the nut: a bold accent clamp across all strings
+      s+=`<rect x="${sx(0)-3}" y="${fy(0)-3.6}" width="${sx(5)-sx(0)+6}" height="7.2" rx="3.6" fill="${accent}"/>`;
+      continue;
+    }
     s+=`<line x1="${sx(0)}" y1="${fy(r)}" x2="${sx(5)}" y2="${fy(r)}" stroke="${isNut?C.line:C.fret}" stroke-width="${isNut?5:1.6}"/>`;
   }
   for(let r=0;r<rows;r++){
@@ -973,6 +1013,10 @@ function diagramSVG(frets,shift,accent,barres){
       s+=`<text x="${LEFT-9}" y="${cy+4}" font-size="11.5" font-family="Inter,system-ui,sans-serif" fill="${C.num}" text-anchor="end">${f}</text>`;
     }
   }
+  // capo fret number beside the nut bar
+  if(hasCapo && base===1){
+    s+=`<text x="${LEFT-9}" y="${fy(0)+4}" font-size="10.5" font-weight="700" font-family="Inter,system-ui,sans-serif" fill="${accent}" text-anchor="end">${capo}</text>`;
+  }
   for(let i=0;i<6;i++)
     s+=`<line x1="${sx(i)}" y1="${fy(0)}" x2="${sx(i)}" y2="${fy(rows)}" stroke="${C.line}" stroke-width="1.8"/>`;
   for(let i=0;i<6;i++){
@@ -984,7 +1028,7 @@ function diagramSVG(frets,shift,accent,barres){
     } else {
       const r=f-base; if(r<0||r>=rows) continue;
       const cy=fy(r)+RH/2;
-      const wasOpen=(shift>0&&f===shift);
+      const wasOpen=(!hasCapo && shift>0 && f===shift);
       s+= wasOpen
         ? `<circle cx="${sx(i)}" cy="${cy}" r="7.6" fill="${C.openFill}" stroke="${accent}" stroke-width="3.4"/>`
         : `<circle cx="${sx(i)}" cy="${cy}" r="8.2" fill="${C.dot}"/>`;
@@ -996,8 +1040,9 @@ function diagramSVG(frets,shift,accent,barres){
     const y=fy(r)+RH/2-9.5, xm=(sx(s1)+sx(s2))/2;
     s+=`<path d="M${sx(s1)} ${y} Q ${xm} ${y-11} ${sx(s2)} ${y}" fill="none" stroke="${C.line}" stroke-width="3" stroke-linecap="round"/>`;
   });
-  // capo barre arc over ring notes (accent)
-  if(shift>0){
+  // capo barre arc over ring notes (accent) — only when there's a transposition
+  // shift and NO physical capo is applied (with a capo the shape is open already)
+  if(shift>0 && !hasCapo){
     const ringStrs=frets.map((f,i)=>f===shift?i:-1).filter(i=>i>=0);
     if(ringStrs.length>=2){
       const r=shift-base;
@@ -1069,6 +1114,8 @@ input[type=text]:focus-visible{outline:2px solid __ACC__; outline-offset:2px}
 .met-segrow button.on{background:__ACC__; border-color:__ACC__; color:__INK__}
 .met-segrow button:focus-visible{outline:2px solid __ACC__; outline-offset:2px}
 .met-pitchrow input[type=range]{accent-color:__ACC__}
+.bld-cc .cc-preview:hover{border-color:__ACC__; color:__ACC__}
+.bld-cc.strumming{border-color:__ACC__; box-shadow:0 0 0 2px __ACC__}
 details.metset>summary::after{content:"+"; margin-left:auto; font-size:1rem; color:__ACC__}
 details.metset[open]>summary::after{content:"\\2212"; color:__ACC__}`;
   document.getElementById('accent-css').textContent=tpl.split('__ACC__').join(c).split('__INK__').join(ink);
@@ -1082,32 +1129,80 @@ function render(){
   applyAccent(T.accent,T.accentInk);
   document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.t===state.t)));
   document.getElementById('tuneline').innerHTML=
-    `${T.label} tuning — <b>${T.notes.join(' ')}</b> · written in ${T.nativeKey} major`;
+    `${T.label} tuning, <b>${T.notes.join(' ')}</b> · written in ${T.nativeKey} major`;
 
   const prog=DATA[state.t][state.prog];
   const numerals=prog.n.split(' ');
   const shift=(PC[state.key]-PC[T.nativeKey]+12)%12;
   const names=numerals.map((nu,i)=>transposeName(nu,'',state.key));
-  document.getElementById('banner').innerHTML=
-    `<span class="keyname">${state.key} Major</span><span class="numerals">${prog.n}</span><span class="chordseq">${names.join(' — ')}</span>`;
+  // gather actual frets for every voicing shown so the capo can be resolved once
+  // for the whole progression (one clamp position, shared by all chords).
+  const allFrets=[];
+  prog.o.forEach(row=>row.forEach(ch=>{ allFrets.push(ch[1].map(f=>f<0?-1:f+shift)); }));
+  const cap=resolveCapo(allFrets);
+  const capMax=capoMaxFor(allFrets);
+  syncCapoSelect(capMax, cap);
 
-  document.getElementById('capo').innerHTML = shift===0 ? '' :
-    `<div class="capo-note">Shapes shifted <b>+${shift} frets</b>. Ring-marked notes <span class="ring-demo"></span> were open strings — barre them at fret ${shift}, or put a <b>capo at fret ${shift}</b> to play the original open shapes.</div>`;
+  document.getElementById('banner').innerHTML=
+    `<span class="keyname">${state.key} Major</span><span class="numerals">${prog.n}</span><span class="chordseq">${names.join(', ')}</span>`;
+
+  document.getElementById('capo').innerHTML = capoNoteHTML(cap, shift, capMax);
 
   let html='';
   prog.o.forEach((row,oi)=>{
     const alt=oi>=5;
     html+=`<section class="option"><h2>Option ${oi%5+1}${alt?'<span class="alt-tag">Alternate</span>':''}</h2><div class="cards">`;
     row.forEach((ch,ci)=>{
-      const frets=ch[1].map(f=>f<0?-1:f+shift);
+      const frets=ch[1].map(f=>f<0?-1:f+shift);              // actual pitch (drives audio)
       const barres=(ch[2]||[]).map(b=>[b[0]+shift,b[1],b[2]]);
       const nm=transposeName(numerals[ci],ch[0],state.key);
       const _m=chordMeta(frets,ch[0],DEG[numerals[ci]][1]==='m',barres);
-      html+=`<div class="card" data-name="${nm}" data-type="${_m.type}" data-fretted="${_m.frettedN}" data-difficulty="${_m.diff}" data-pos="${_m.pos}" data-frets="[${frets.join(',')}]"><div class="cname">${nm}</div>${diagramSVG(frets,shift,T.accent,barres)}</div>`;
+      // displayed shape is relative to the capo: a note at the capo fret rings open
+      const dFrets = cap>0 ? frets.map(f=> f<0?-1 : (f-cap<=0?0:f-cap)) : frets;
+      const dBarres = cap>0 ? barres.map(b=>[b[0]-cap,b[1],b[2]]).filter(b=>b[0]>=1) : barres;
+      const dShift = cap>0 ? Math.max(0,shift-cap) : shift;
+      html+=`<div class="card" data-name="${nm}" data-type="${_m.type}" data-fretted="${_m.frettedN}" data-difficulty="${_m.diff}" data-pos="${_m.pos}" data-frets="[${frets.join(',')}]"><div class="cname">${nm}</div>${diagramSVG(dFrets,dShift,T.accent,dBarres,cap)}</div>`;
     });
     html+='</div></section>';
   });
   document.getElementById('options').innerHTML=html;
+}
+
+// one capo readout for the whole progression (replaces per-chord tags)
+function capoNoteHTML(cap, shift, capMax){
+  if(cap>0){
+    return `<div class="capo-note"><b>Capo at fret ${cap}</b> for this whole progression, every chord above is drawn as you'd finger it with the capo on, so the shapes ring as easy open-position chords while sounding in ${state.key}. The same capo stays on for every chord in the song.</div>`;
+  }
+  if(shift>0){
+    return `<div class="capo-note">Shapes are shifted <b>+${shift} frets</b> to reach ${state.key}. Set a <b>Capo</b> in Settings${capMax?` (up to fret ${capMax})`:''} to play these as easy open shapes instead, one capo position for the whole progression.</div>`;
+  }
+  return '';
+}
+
+// keep the Settings capo dropdown + hint in sync with the current progression's
+// valid range and the single resolved capo fret.
+function syncCapoSelect(capMax, cap){
+  const sel=document.getElementById('sel-capo');
+  if(sel){
+    const sugg=Math.min(capMax, suggestedCapo());
+    let opts=`<option value="auto"${state.capo==='auto'?' selected':''}>Auto${sugg>0?`, fret ${sugg}`:`, none`}</option>`
+            +`<option value="0"${state.capo===0?' selected':''}>Off (no capo)</option>`;
+    for(let f=1; f<=capMax; f++) opts+=`<option value="${f}"${state.capo===f?' selected':''}>Fret ${f}</option>`;
+    sel.innerHTML=opts;
+    // if a previously-chosen explicit fret is out of range for this song, reflect the
+    // actually-applied (clamped) fret so the control matches what's drawn
+    if(state.capo!=='auto' && state.capo>capMax){ sel.value = cap>0 ? String(cap) : '0'; }
+  }
+  const hint=document.getElementById('capo-hint');
+  if(hint){
+    if(cap>0){
+      hint.innerHTML=`<span class="capo-chip">Capo ${cap}</span> one position for the whole progression, all chords drawn as you'd finger them with it on.`;
+    } else if(capMax>0){
+      hint.innerHTML=`<span class="capo-chip off">No capo</span> chords shown fully fretted. Choose a fret to play easy open shapes instead.`;
+    } else {
+      hint.innerHTML=`<span class="capo-chip off">No capo</span> these voicings are already open, a capo wouldn't change the fingering.`;
+    }
+  }
 }
 
 function init(){
@@ -1117,6 +1212,14 @@ function init(){
   sp.innerHTML=DATA.od.map((p,i)=>`<option value="${i}">${p.n}</option>`).join('');
   sk.addEventListener('change',()=>{state.key=sk.value; render()});
   sp.addEventListener('change',()=>{state.prog=+sp.value; render()});
+  const scap=document.getElementById('sel-capo');
+  if(scap) scap.addEventListener('change',()=>{
+    state.capo = scap.value==='auto' ? 'auto' : (parseInt(scap.value,10)||0);
+    // if the library/builder filtered view is active, re-render that; else the reader
+    if(typeof lfActive==='function' && lfActive() && typeof renderLibrary==='function') renderLibrary();
+    else render();
+    if(typeof window.__capoRedrawBuilder==='function') window.__capoRedrawBuilder();
+  });
   document.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',()=>{
     state.t=b.dataset.t;
     state.key=TUNINGS[state.t].nativeKey;
@@ -1287,6 +1390,37 @@ function chordMeta(frets,suffix,minor,barres){
   return {type,diff,pos,fingers,opens,span,frettedN:fretted.length,barre};
 }
 
+// ── capo: a single, song-wide setting ──
+// A capo is clamped at ONE fret for the whole progression; every chord is then
+// fingered relative to it (a note at the capo fret becomes an open string, and
+// the whole shape moves down by the capo amount). It only sounds right if no
+// chord needs a note BELOW the capo, so the valid range is 0…(lowest fretted
+// note across every chord shown).
+//
+// state.capo holds the player's choice:
+//   'auto' → use the progression's natural capo: the key-transposition shift,
+//            which returns every shifted shape to its original open fingering
+//   0      → no capo (chords shown fully fretted)
+//   1..N   → an explicit fret
+//
+// capoMaxFor(framesList) → highest fret a capo could sit at for these voicings.
+function capoMaxFor(fretsList){
+  let lo=99;
+  fretsList.forEach(fr=>fr.forEach(f=>{ if(f>0&&f<lo) lo=f; }));
+  return lo===99?0:lo; // all-open / muted set → no capo possible
+}
+// the natural capo the reader's transposition implies (its key shift)
+function suggestedCapo(){
+  const T=TUNINGS[state.t];
+  return (PC[state.key]-PC[T.nativeKey]+12)%12;
+}
+// resolve the single capo fret in effect, clamped to what's physically valid
+function resolveCapo(fretsList){
+  const max=capoMaxFor(fretsList);
+  let want = state.capo==='auto' ? suggestedCapo() : (state.capo|0);
+  return Math.max(0, Math.min(max, want));
+}
+
 const LF={q:'',type:'',diff:'',pos:'',fing:'',sort:'',barre:false,open:false};
 const lfActive=()=>!!(LF.q||LF.type||LF.diff||LF.pos||LF.fing||LF.sort||LF.barre||LF.open);
 
@@ -1338,7 +1472,7 @@ function renderLibrary(){
   const total=pool.length, CAP=120;
   const shown=pool.slice(0,CAP);
   const cnt=document.getElementById('libcnt');
-  if(cnt) cnt.textContent=`${total} voicing${total===1?'':'s'} in ${T.label} · key of ${state.key}${total>CAP?` — showing first ${CAP}`:''}`;
+  if(cnt) cnt.textContent=`${total} voicing${total===1?'':'s'} in ${T.label} · key of ${state.key}${total>CAP?`, showing first ${CAP}`:''}`;
   let html='<section class="option"><div class="cards">';
   shown.forEach(e=>{
     const dlab=e.m.diff.charAt(0).toUpperCase()+e.m.diff.slice(1);
@@ -1348,7 +1482,7 @@ function renderLibrary(){
   });
   html+='</div></section>';
   document.getElementById('options').innerHTML=html;
-  document.getElementById('banner').innerHTML=`<span class="keyname">Chord Library</span><span class="numerals">${T.label}</span><span class="chordseq">filtered view — clear to return to progressions</span>`;
+  document.getElementById('banner').innerHTML=`<span class="keyname">Chord Library</span><span class="numerals">${T.label}</span><span class="chordseq">filtered view, clear to return to progressions</span>`;
   document.getElementById('capo').innerHTML='';
 }
 
@@ -1818,6 +1952,9 @@ function lfApply(){
     return html;
   }
 
+  // the single capo fret in effect for the whole built song (computed in renderBuilder)
+  let bldCapo=0;
+
   function slotHTML(part,pi,si){
     const T=TUNINGS[state.t];
     const shift=(PC[state.key]-PC[T.nativeKey]+12)%12;
@@ -1829,16 +1966,31 @@ function lfApply(){
       return `<div class="bld-slot empty" data-pi="${pi}" data-si="${si}" role="button" tabindex="0" aria-label="${lab}">`
         +`<span class="plus">+</span><span class="plus-lab">${lab}</span>${sub}</div>`;
     }
+    const cap=bldCapo;
+    const dFrets = cap>0 ? ch.frets.map(f=> f<0?-1 : (f-cap<=0?0:f-cap)) : ch.frets;
+    const dBarres = cap>0 ? (ch.barres||[]).map(b=>[b[0]-cap,b[1],b[2]]).filter(b=>b[0]>=1) : (ch.barres||[]);
+    const dShift = cap>0 ? Math.max(0,shift-cap) : shift;
     return `<div class="bld-slot filled" data-pi="${pi}" data-si="${si}" data-frets="[${ch.frets.join(',')}]" role="button" tabindex="0" aria-label="Play ${ch.name}">`
       +`<button type="button" class="slot-clear" data-pi="${pi}" data-si="${si}" aria-label="Remove chord">&times;</button>`
-      +`<div class="cname">${ch.name}</div>${diagramSVG(ch.frets,shift,T.accent,ch.barres||[])}</div>`;
+      +`<div class="cname">${ch.name}</div>${diagramSVG(dFrets,dShift,T.accent,dBarres,cap)}</div>`;
   }
 
   function renderBuilder(){
     const T=TUNINGS[state.t];
+    // resolve ONE capo for the whole song from every filled slot's actual frets
+    const filled=[];
+    BLD.parts.forEach(p=>p.slots.forEach(ch=>{ if(ch&&ch.frets) filled.push(ch.frets); }));
+    const capMax=capoMaxFor(filled);
+    bldCapo=resolveCapo(filled);
+    // keep the Settings ▸ Capo dropdown constrained to THIS song's valid range
+    if(typeof syncCapoSelect==='function') syncCapoSelect(capMax, bldCapo);
+    const capoTxt = bldCapo>0
+      ? `<span class="bld-capo-chip">Capo ${bldCapo}</span>`
+      : (capMax>0 ? `<span class="bld-capo-chip off">No capo</span>` : '');
     const bn=$('bld-banner');
     if(bn) bn.innerHTML=`<span class="keyname">${state.key} Major</span><span class="numerals">${T.label}</span>`
-      +`<span class="chordseq">build your progression — tap a slot to choose any voicing in this key &amp; tuning</span>`
+      +`<span class="chordseq">build your progression, tap a slot to choose any voicing in this key &amp; tuning</span>`
+      +(capoTxt?`<span class="bld-capo">${capoTxt}<small>one capo for the whole song · set it under Settings ▸ Capo</small></span>`:'')
       +`<span class="bld-play-wrap"><span class="bld-play-cap">Chord Playback</span>`
       +`<button type="button" class="bld-play${BP.playing?' playing':''}" id="bld-play" aria-label="Play chord progression" aria-pressed="${BP.playing?'true':'false'}">`
       +`<svg class="ic-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5v14l12-7z"/></svg>`
@@ -1945,7 +2097,7 @@ function lfApply(){
     }
 
     const title=$('bld-picker-title'), sub=$('bld-picker-sub'), car=$('bld-carousel');
-    if(title) title.textContent = deg ? `Choose ${deg.name} — degree ${deg.numeral}` : 'Choose a chord';
+    if(title) title.textContent = deg ? `Choose ${deg.name}, degree ${deg.numeral}` : 'Choose a chord';
     const filt=lfActive()?' · filtered':'';
     if(sub){
       sub.textContent = deg
@@ -1959,10 +2111,11 @@ function lfApply(){
     shown.forEach((e,i)=>{
       const dlab=e.m.diff.charAt(0).toUpperCase()+e.m.diff.slice(1);
       const fromProg = deg && progColumnKeys(si).has(e.name+'|'+e.frets.join(','));
-      html+=`<div class="bld-cc${fromProg?' from-prog':''}" data-idx="${i}">`
+      html+=`<div class="bld-cc${fromProg?' from-prog':''}" data-idx="${i}" data-frets="[${e.frets.join(',')}]">`
         +(fromProg?`<div class="cc-tag">from progression</div>`:'')
         +`<div class="cname">${e.name}</div>${diagramSVG(e.frets,shift,T.accent,e.barres)}`
-        +`<div class="cc-meta"><b>${dlab}</b> · fret ${e.m.pos||'open'} · ${e.m.fingers} finger${e.m.fingers===1?'':'s'}${e.m.barre?' · barre':''}</div></div>`;
+        +`<div class="cc-meta"><b>${dlab}</b> · fret ${e.m.pos||'open'} · ${e.m.fingers} finger${e.m.fingers===1?'':'s'}${e.m.barre?' · barre':''}</div>`
+        +`<button type="button" class="cc-preview" data-idx="${i}" aria-label="Preview ${e.name}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5v14l12-7z"/></svg><span>Preview</span></button></div>`;
     });
     if(!pool.length) html=`<div class="bld-picker-empty">No voicings match the current filters. Adjust the filters in Settings to see more options.</div>`;
     if(car){
@@ -2008,6 +2161,15 @@ function lfApply(){
     if(dn){ const i=+dn.dataset.pi; if(i<BLD.parts.length-1){ const a=BLD.parts; [a[i+1],a[i]]=[a[i],a[i+1]]; renderBuilder(); } return; }
     const del=t.closest('.bld-del');
     if(del){ const i=+del.dataset.pi; if(BLD.parts.length>1){ BLD.parts.splice(i,1); renderBuilder(); } return; }
+
+    // preview a carousel chord without selecting it (play button at the card's bottom)
+    const prev=t.closest('.cc-preview');
+    if(prev){
+      e.stopPropagation();
+      const cc0=prev.closest('.bld-cc');
+      if(cc0 && cc0.dataset.frets){ try{ strumChord(cc0, JSON.parse(cc0.dataset.frets)); }catch(err){} }
+      return;
+    }
 
     // carousel chord chosen
     const cc=t.closest('.bld-cc');
@@ -2376,7 +2538,7 @@ function lfApply(){
   function render(){
     const bn=$('rec-banner');
     if(bn) bn.innerHTML=`<span class="keyname">Re-chord-er</span>`
-      +`<span class="chordseq">record guitar into the boxes — count-in &amp; timing follow the metronome's tempo and time signature</span>`;
+      +`<span class="chordseq">record guitar into the boxes, count-in &amp; timing follow the metronome's tempo and time signature</span>`;
 
     const wrap=$('rec-parts'); if(!wrap) return;
     let html='';
